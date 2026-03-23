@@ -44,25 +44,6 @@ def create_app():
     with app.app_context():
         # 1. Ensure all tables exist
         db.create_all()
-        
-        # 2. AUTO-MIGRATION: Force expand columns to prevent 'Data Too Long'
-        from sqlalchemy import text
-        try:
-            # Expand phone columns
-            db.session.execute(text("ALTER TABLE sfz_users MODIFY COLUMN phone VARCHAR(100);"))
-            db.session.execute(text("ALTER TABLE sfz_scratch_links MODIFY COLUMN phone_number VARCHAR(100);"))
-            db.session.execute(text("ALTER TABLE sfz_scratch_links MODIFY COLUMN submitted_phone VARCHAR(255);"))
-            db.session.execute(text("ALTER TABLE sfz_team_members MODIFY COLUMN phone VARCHAR(255);"))
-            
-            # EXPAND SCREENCHOT STORAGE (Fix for mobile high-res images)
-            db.session.execute(text("ALTER TABLE sfz_users MODIFY COLUMN payment_screenshot MEDIUMTEXT;"))
-            db.session.execute(text("ALTER TABLE sfz_users MODIFY COLUMN avatar_url MEDIUMTEXT;"))
-            
-            db.session.commit()
-            print("[Sofzenix HackFest] Database columns expanded successfully.")
-        except Exception as e:
-            db.session.rollback()
-            print(f"[Sofzenix HackFest] Column fix not required or failed: {str(e)[:50]}")
 
         _seed_admin(app)
         _seed_settings()
