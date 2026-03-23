@@ -258,50 +258,153 @@
   <section class="gsap-fade" id="selection" style="padding: 100px 20px; max-width: 1200px; margin: 0 auto;">
     <h2 style="text-align:center; font-family:var(--font-mono); color:#fff; margin-bottom:50px;">// SELECTION_PROCESS</h2>
     <div style="display: flex; gap: 40px; flex-wrap: wrap;">
-      <div style="flex: 1; min-width: 300px;">
-        <div class="glass-card" style="padding: 10px; border-radius: 12px;">
-          <div style="padding: 20px; border-left: 4px solid var(--neon-cyan); margin-bottom: 10px; background: rgba(0,245,255,0.05);">
-            <span style="font-family:var(--font-mono); color:var(--neon-cyan); opacity:0.6;">01</span>
-            <h4 style="color:#fff; margin-top:5px;">PROBLEM IDENTIFICATION</h4>
-          </div>
-          <div style="padding: 20px; border-left: 4px solid transparent; opacity: 0.4;">
-            <span style="font-family:var(--font-mono); color:#fff; opacity:0.6;">02</span>
-            <h4 style="color:#fff; margin-top:5px;">PROPOSED SOLUTION</h4>
-          </div>
-          <div style="padding: 20px; border-left: 4px solid transparent; opacity: 0.4;">
-            <span style="font-family:var(--font-mono); color:#fff; opacity:0.6;">03</span>
-            <h4 style="color:#fff; margin-top:5px;">TEAM SELECTION</h4>
-          </div>
-          <div style="padding: 20px; border-left: 4px solid transparent; opacity: 0.4;">
-            <span style="font-family:var(--font-mono); color:#fff; opacity:0.6;">04</span>
-            <h4 style="color:#fff; margin-top:5px;">SUMMER HACKATHON</h4>
-          </div>
-          <div style="padding: 20px; border-left: 4px solid transparent; opacity: 0.4;">
-            <span style="font-family:var(--font-mono); color:#fff; opacity:0.6;">05</span>
-            <h4 style="color:#fff; margin-top:5px;">FINAL DEMONSTRATION</h4>
-          </div>
+      <!-- Sidebar Tabs -->
+      <div style="flex: 1; min-width: 280px; max-width: 100%;">
+        <div class="glass-card" style="padding: 10px; border-radius: 12px; display: flex; flex-direction: column; gap: 5px;" id="tabs-container">
+          <!-- Tabs injected via JS -->
         </div>
       </div>
-      <div style="flex: 2; min-width: 350px;">
-        <div class="glass-card" style="padding: 40px; height: 100%; border: 1px solid var(--neon-cyan);">
-           <h2 style="color:#fff; font-size: 2.5rem; line-height: 1; margin-bottom:30px;">PROBLEM<br>IDENTIFICATION</h2>
-           <p style="color:var(--text-muted); line-height: 1.8; margin-bottom: 40px; border-left: 2px solid var(--neon-cyan); padding-left: 20px;">
-             Participants identify a real-world problem that can be solved using innovative technology. The problem should require multi-step reasoning, user impact analysis, and technical feasibility.
-           </p>
-           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px;">
-             <div style="background: rgba(255,255,255,0.02); padding: 20px; border: 1px solid rgba(255,255,255,0.05);">
-               <h5 style="color:#fff; margin-bottom: 5px;">REAL-WORLD</h5><p style="font-size: 0.8rem; color:var(--text-muted);">Impact Scaling</p>
-             </div>
-             <div style="background: rgba(255,255,255,0.02); padding: 20px; border: 1px solid rgba(255,255,255,0.05);">
-               <h5 style="color:#fff; margin-bottom: 5px;">MARKET NEED</h5><p style="font-size: 0.8rem; color:var(--text-muted);">Current Gaps</p>
-             </div>
-             <div style="background: rgba(255,255,255,0.02); padding: 20px; border: 1px solid rgba(255,255,255,0.05);">
-               <h5 style="color:#fff; margin-bottom: 5px;">INNOVATION</h5><p style="font-size: 0.8rem; color:var(--text-muted);">Unique Approach</p>
-             </div>
-           </div>
+
+      <!-- Main Content Area -->
+      <div style="flex: 2; min-width: 280px; max-width: 100%;">
+        <div class="glass-card" style="padding: 40px 20px; height: 100%; border: 1px solid var(--neon-cyan); transition: opacity 0.3s ease; overflow: hidden;" id="tab-content">
+           <!-- Dynamic content injected via JS -->
         </div>
       </div>
     </div>
+
+    <!-- Script for Tab Switching -->
+    <script>
+      const selectionTabs = [
+        {
+          id: '01',
+          name: 'PROBLEM IDENTIFICATION',
+          title: 'PROBLEM<br>IDENTIFICATION',
+          desc: 'Participants identify a real-world problem that can be solved using innovative technology. The problem should require logical reasoning, real user impact analysis, and technical feasibility.',
+          boxes: [
+            { t: 'REAL-WORLD PROBLEM', s: 'Impact Scaling' },
+            { t: 'MARKET NEED', s: 'Current Gaps' },
+            { t: 'INNOVATION', s: 'Unique Approach' }
+          ]
+        },
+        {
+          id: '02',
+          name: 'PROPOSED SOLUTION',
+          title: 'PROPOSED<br>SOLUTION',
+          desc: 'Teams submit a detailed PDF or presentation describing their proposed solution. This includes core architecture, technology stack, interaction flows, and failure handling mechanisms.',
+          boxes: [
+            { t: 'SYSTEM ARCHITECTURE', s: '' },
+            { t: 'TECH STACK & TOOLS', s: '' },
+            { t: 'SYSTEM DESIGN', s: '' }
+          ]
+        },
+        {
+          id: '03',
+          name: 'TEAM SELECTION',
+          title: 'TEAM<br>SELECTION',
+          desc: 'Submissions are evaluated based on innovation quotient, technical feasibility, real-world impact, and scalability. Top selected teams will be invited for the online summer hackathon.',
+          boxes: [
+            { t: 'INNOVATION QUOTIENT', s: '' },
+            { t: 'TECHNICAL DEPTH', s: '' },
+            { t: 'SCALABLE DESIGN', s: '' }
+          ]
+        },
+        {
+          id: '04',
+          name: 'SUMMER HACKATHON',
+          title: 'SUMMER<br>HACKATHON',
+          desc: 'Shortlisted teams participate in the rigorous online summer hackathon where they transform their idea into a working prototype.',
+          boxes: [
+            { t: '36-HOUR BUILD', s: '' },
+            { t: 'LIVE DEVELOPMENT', s: '' },
+            { t: 'MENTOR SUPPORT', s: '' }
+          ]
+        },
+        {
+          id: '05',
+          name: 'FINAL DEMONSTRATION',
+          title: 'FINAL<br>DEMONSTRATION',
+          desc: 'Teams present their working solution to judges. Projects must demonstrate real execution, clean UI/UX, and a complete end-to-end workflow.',
+          boxes: [
+            { t: 'LIVE DEMO', s: '' },
+            { t: 'END-TO-END WORKFLOW', s: '' },
+            { t: 'REAL EXECUTION', s: '' }
+          ]
+        }
+      ];
+
+      const tabsContainer = document.getElementById('tabs-container');
+      const tabContent = document.getElementById('tab-content');
+
+      function renderTabContent(index) {
+        const data = selectionTabs[index];
+        tabContent.style.opacity = 0;
+        
+        setTimeout(() => {
+          let boxesHtml = '';
+          data.boxes.forEach(b => {
+            boxesHtml += `
+              <div style="background: rgba(255,255,255,0.02); padding: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left;">
+                <h5 style="color:#fff; margin-bottom: 5px; font-family:var(--font-mono); font-size: 0.9rem;">${b.t}</h5>
+                ${b.s ? `<p style="font-size: 0.8rem; color:var(--text-muted); margin:0;">${b.s}</p>` : ''}
+              </div>
+            `;
+          });
+          
+          tabContent.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap: wrap;">
+              <h2 style="color:#fff; font-size: clamp(1.8rem, 5vw, 2.5rem); line-height: 1.1; margin-bottom:20px; word-break: break-word;">${data.title}</h2>
+              <span style="color:var(--neon-cyan); font-size: 2rem;">⚡</span>
+            </div>
+            <p style="color:var(--text-muted); line-height: 1.8; margin-bottom: 30px; border-left: 2px solid var(--neon-cyan); padding-left: 15px; font-size: 0.95rem; word-break: break-word;">
+              ${data.desc}
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px;">
+              ${boxesHtml}
+            </div>
+          `;
+          tabContent.style.opacity = 1;
+
+          // Update tabs visuals
+          Array.from(tabsContainer.children).forEach((child, i) => {
+            if (i === index) {
+              child.style.borderLeft = '4px solid var(--neon-cyan)';
+              child.style.background = 'rgba(0,245,255,0.05)';
+              child.style.opacity = '1';
+              child.querySelector('span').style.color = 'var(--neon-cyan)';
+            } else {
+              child.style.borderLeft = '4px solid transparent';
+              child.style.background = 'transparent';
+              child.style.opacity = '0.4';
+              child.querySelector('span').style.color = '#fff';
+            }
+          });
+        }, 150); // fast transition
+      }
+
+      selectionTabs.forEach((tab, index) => {
+        const div = document.createElement('div');
+        div.style.padding = '20px';
+        div.style.borderLeft = '4px solid transparent';
+        div.style.opacity = '0.4';
+        div.style.cursor = 'pointer';
+        div.style.transition = 'all 0.3s ease';
+        
+        div.innerHTML = `
+          <span style="font-family:var(--font-mono); color:#fff; opacity:0.6; font-size: 1.2rem; display:block; margin-bottom:5px;">${tab.id}</span>
+          <h4 style="color:#fff; margin:0; font-family:var(--font-mono); font-size:1rem;">${tab.name}</h4>
+        `;
+        
+        // hover support
+        div.addEventListener('mouseenter', () => renderTabContent(index));
+        div.addEventListener('click', () => renderTabContent(index));
+        
+        tabsContainer.appendChild(div);
+      });
+
+      // Init first tab
+      renderTabContent(0);
+    </script>
   </section>
 
   <footer class="site-footer" style="margin-top: 50px;">
