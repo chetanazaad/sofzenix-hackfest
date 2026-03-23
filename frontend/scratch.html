@@ -189,6 +189,11 @@
 
             <!-- Reward Box with Canvas -->
             <div class="reward-box" id="reward-box">
+                <!-- Fallback Button if Canvas Fails -->
+                <div id="reveal-fallback" style="position:absolute; z-index: 100; inset:0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display:none;">
+                   <button class="btn-gold" style="width: auto; padding: 10px 20px;" onclick="forceReveal()">✨ Magic Reveal</button>
+                </div>
+
                 <div class="reward-label">Your Reward</div>
                 <div class="reward-amount">
                     <span class="reward-rupee">₹</span>
@@ -204,9 +209,12 @@
             </div>
 
             <!-- Scratch Hint -->
-            <div class="scratch-hint" id="scratch-hint">
-                <div class="hint-dot"></div>
-                <span>Scratch the card to reveal your reward!</span>
+            <div class="scratch-hint" id="scratch-hint" style="justify-content: space-between;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div class="hint-dot"></div>
+                    <span>Scratch the card fully to reveal!</span>
+                </div>
+                <button onclick="showFallback()" style="background:none; border:none; color:#A855F7; font-size:11px; cursor:pointer; text-decoration:underline;">Card stuck?</button>
             </div>
 
             <!-- ── STEP 1: Phone Verify (Revealed after scratch) ── -->
@@ -321,6 +329,11 @@
             }
         })();
 
+        // ── FAILSAFE: If canvas is stuck ────────────────────────
+        function showFallback() {
+            document.getElementById('reveal-fallback').style.display = 'flex';
+        }
+
         // ── CANVAS ────────────────────────────────────────────────
         function initCanvas() {
             const canvas  = document.getElementById('scratch-canvas');
@@ -363,13 +376,12 @@
             // ── Event helpers ──
             const getPos = (e) => {
                 const r = canvas.getBoundingClientRect();
-                const s = e.touches ? e.touches[0] : e;
+                const s = e.touches ? e.touches[0] : (e.clientX ? e : (e.changedTouches ? e.changedTouches[0] : e));
                 return { x: s.clientX - r.left, y: s.clientY - r.top };
             };
 
             const draw = (e) => {
                 if (!isDrawing) return;
-                e.preventDefault();
                 const { x, y } = getPos(e);
                 ctx.beginPath();
                 ctx.arc(x, y, 40, 0, Math.PI * 2); 
@@ -384,7 +396,7 @@
             canvas.addEventListener('mouseup',    () => { isDrawing = false; checkReveal(ctx, canvas, true); });
             canvas.addEventListener('mouseleave', () => { isDrawing = false; });
             canvas.addEventListener('touchstart', (e) => { e.preventDefault(); isDrawing = true; draw(e); }, { passive: false });
-            canvas.addEventListener('touchmove',  draw, { passive: false });
+            canvas.addEventListener('touchmove',  (e) => { e.preventDefault(); draw(e); }, { passive: false });
             canvas.addEventListener('touchend',   () => { isDrawing = false; checkReveal(ctx, canvas, true); });
         }
 
@@ -398,8 +410,8 @@
 
             document.getElementById('progress-bar').style.width = Math.min(pct, 100).toFixed(1) + '%';
 
-            // Increase threshold to 25% for a better "full scratch" experience
-            if (pct >= 25 || (isFinal && pct >= 12)) {
+            // Reveal at 20% scratch or if they lift finger after significant move
+            if (pct >= 20 || (isFinal && moveCount > 15)) {
                 forceReveal();
             }
         }
@@ -413,11 +425,11 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             canvas.style.pointerEvents = 'none';
+            document.getElementById('reveal-fallback').style.display = 'none';
             document.getElementById('progress-bar').style.width = '100%';
             document.getElementById('scratch-hint').style.display = 'none';
             document.getElementById('reward-confetti').style.display = 'block';
 
-            // Directly show verification form instead of intermediate button
             if (requiresPhone) {
                 showSection('section-phone');
             } else {
