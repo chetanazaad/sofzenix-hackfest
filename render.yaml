@@ -1,22 +1,7 @@
 services:
-  # ─── FRONTEND (Static Site) ──────────────────────────────────────────────────
-  - type: static
-    name: sofzenix-hackfest-ui
-    env: static
-    buildCommand: "echo 'No build command needed'"
-    publishPath: frontend
-    headers:
-      - path: /*
-        name: Access-Control-Allow-Origin
-        value: "*"
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-
-  # ─── BACKEND (Flask Web Service) ─────────────────────────────────────────────
+  # ─── UNIFIED WEB SERVICE (Frontend + Backend) ────────────────────────────────
   - type: web
-    name: sofzenix-hackfest-api
+    name: sofzenix-hackfest-unified
     env: python
     buildCommand: "pip install -r backend/requirements.txt"
     startCommand: "cd backend && gunicorn app:app"
@@ -26,16 +11,20 @@ services:
       - key: PYTHON_VERSION
         value: 3.10.12
       - key: DB_HOST
-        value: YOUR_TIDB_HOST_HERE
+        value: gateway01.ap-southeast-1.prod.aws.tidbcloud.com
       - key: DB_USER
-        value: YOUR_TIDB_USER_HERE
+        value: 3oB7SH7sLkwM5pY.root
       - key: DB_PASSWORD
-        value: YOUR_TIDB_PASS_HERE
+        value: dJy9dADqnrhLC83M
       - key: DB_NAME
-        value: sofzenix_hackfest
+        value: test
+      - key: DB_PORT
+        value: 4000
       - key: ALLOWED_ORIGIN
         value: "*"
       - key: SESSION_COOKIE_SAMESITE
         value: "None"
       - key: SESSION_COOKIE_SECURE
         value: "True"
+      - key: SECRET_KEY
+        value: "sofzenix-hackfest-unified-2026"
