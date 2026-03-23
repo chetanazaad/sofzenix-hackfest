@@ -20,16 +20,16 @@ def _build_db_uri() -> str:
         return db_url
 
     host     = os.environ.get('DB_HOST', '')
-    port     = os.environ.get('DB_PORT', '3306')
+    port     = os.environ.get('DB_PORT', '4000')
     user     = os.environ.get('DB_USER', 'root')
     password = os.environ.get('DB_PASSWORD', '')
-    name     = os.environ.get('DB_NAME', 'sofzenix_hackfest')
+    name     = os.environ.get('DB_NAME', 'sofzenix_hackfest_live')
 
     if host:
         # TiDB Cloud requires SSL
         return f"mysql+pymysql://{user}:{password}@{host}:{port}/{name}?ssl_ca=ca.pem"
 
-    # Absolute fallback — SQLite (good enough for Render testing without a DB)
+    # Absolute fallback — SQLite
     return 'sqlite:///sofzenix_hackfest.db'
 
 
@@ -69,4 +69,3 @@ class Config:
 
     # ── CORS — set to Hostinger domain in production ──────────────
     ALLOWED_ORIGIN = os.environ.get('ALLOWED_ORIGIN', '*')
-

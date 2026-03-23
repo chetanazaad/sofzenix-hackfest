@@ -42,21 +42,20 @@ def create_app():
     app.register_blueprint(scratch_bp)
 
     with app.app_context():
-        # ─── AGGRESSIVE SCHEMA FIX ───
+        # ─── FRESH DATABASE SETUP ───
         from sqlalchemy import text
         try:
-            # We must disable foreign key checks temporarily to drop blocking tables
-            # Note: TiDB uses SET FOREIGN_KEY_CHECKS=0
-            db.session.execute(text('SET FOREIGN_KEY_CHECKS = 0;'))
-            db.session.execute(text('DROP TABLE IF EXISTS team_members;'))
-            db.session.execute(text('DROP TABLE IF EXISTS scratch_links;'))
-            db.session.execute(text('DROP TABLE IF EXISTS payment_logs;'))
-            db.session.execute(text('DROP TABLE IF EXISTS users;'))
-            db.session.execute(text('SET FOREIGN_KEY_CHECKS = 1;'))
-            db.session.commit()
-            print("[Sofzenix Hackfest] Successfully wiped old schema for fresh TiDB setup.")
+            # Connect to TiDB and ensure the target database exists
+            # We connect without a database name first to create it
+            from sqlalchemy import create_engine
+            base_uri = Config.SQLALCHEMY_DATABASE_URI.rsplit('/', 1)[0] + '/mysql?ssl_ca=ca.pem'
+            temp_engine = create_engine(base_uri)
+            with temp_engine.connect() as conn:
+                conn.execute(text("CREATE DATABASE IF NOT EXISTS sofzenix_hackfest_live;"))
+                conn.commit()
+            print("[Sofzenix Hackfest] Database 'sofzenix_hackfest_live' is ready.")
         except Exception as e:
-            print(f"[Sofzenix Hackfest] Schema wipe skip/error: {e}")
+            print(f"[Sofzenix Hackfest] DB Creation skipped (might already exist): {e}")
 
         db.create_all()
         _seed_admin(app)
