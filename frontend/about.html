@@ -252,69 +252,41 @@
     <a href="register.html" style="color:var(--neon-cyan);">Register</a>
   </div>
 
-  <div class="hero">
-    <div class="hero-glow"></div>
-    <div class="gsap-hero subtitle" style="font-family:var(--font-mono); color:var(--text-muted); letter-spacing:0.3em; margin-bottom:12px;">// 2026 NATIONAL EDITION</div>
-    <h1 class="gsap-hero">MASTER THE <br><span style="background: linear-gradient(90deg, #00f5ff, #b538ff); -webkit-background-clip: text; color: transparent;">FUTURE.</span></h1>
-    
-    <div class="typewriter-text" id="typewriter"></div>
-    
-    <!-- Countdown Timer -->
-    <div id="countdown" class="gsap-hero">
-      <div class="timer-box"><span id="days" class="stat-val">00</span><span class="stat-label">Days</span></div>
-      <div class="timer-box"><span id="hours" class="stat-val">00</span><span class="stat-label">Hrs</span></div>
-      <div class="timer-box"><span id="minutes" class="stat-val">00</span><span class="stat-label">Min</span></div>
-      <div class="timer-box"><span id="seconds" class="stat-val" style="color:var(--neon-purple)">00</span><span class="stat-label">Sec</span></div>
-    </div>
+  <div style="padding-top: 100px;"></div>
 
-    <div class="gsap-hero" style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
-      <a href="register.html" class="cta-button">Initialize HackFest <span style="font-size:16px;">⚡</span></a>
-    </div>
-  </div>
-
-  <!-- Sponsor Loop -->
-  <div class="sponsor-ticker gsap-fade">
-    <div class="ticker-track">
-       <span>// SPONSORED BY: TI-DB // CODE-CRAFTERS // AI-SOLUTIONS // TECH-NOMADS // NERD-LABS // TI-DB // CODE-CRAFTERS // AI-SOLUTIONS //</span>
-    </div>
-  </div>
-
-  <!-- Sections moved to separate pages -->
-
-  <!-- Features Grid -->
-  <!-- Features section removed -->
-
-  <!-- Timeline -->
-  <section id="timeline" style="padding:50px 0;">
-    <h2 style="text-align:center; font-family:var(--font-mono); color:#fff; margin-bottom:20px;">// CAMPAIGN_TIMELINE</h2>
-    <div class="timeline">
-      <div class="timeline-item gsap-timeline">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content glass-card">
-          <h3 style="color:var(--neon-cyan); margin-bottom:10px; font-family:var(--font-mono);">01. Registration Period</h3>
-          <p style="color:var(--text-muted); font-size:0.95rem;">March 23, 2026 to April 27, 2026. Secure your spot early and form your winning team.</p>
+  <!-- About Section -->
+  <section class="gsap-fade" id="about" style="padding: 100px 20px; max-width: 1100px; margin: 0 auto; text-align: center;">
+    <h2 style="font-family:var(--font-mono); color:#fff; margin-bottom:40px;">// ABOUT_US</h2>
+    <div class="glass-card" style="padding: 50px; text-align: left;">
+      <h3 style="color:var(--neon-cyan); margin-bottom:20px;">INNOVATE. BUILD. TRANSFORM.</h3>
+      <p style="color:#fff; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px;">
+        Welcome to the National Level Online Summer Hackathon 2026. SkilStation is a platform dedicated to fostering elite technical talent across India. 
+        Build unique innovations by solving real-time market challenges. This is not just about coding — it's about understanding real-user problems, 
+        validating ideas, and creating solutions that can work in the real world.
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; border-top: 1px solid var(--glass-border); padding-top: 30px;">
+        <div>
+          <h4 style="color:var(--neon-purple);">THEME</h4>
+          <p style="color:var(--text-muted);">"Open Innovation" <br>(Build your own Unique Idea)</p>
+        </div>
+        <div>
+          <h4 style="color:var(--neon-purple);">FEES</h4>
+          <p style="color:var(--text-muted);">₹99 (Individual) <br>₹349 (Team of 4)</p>
+        </div>
+        <div>
+          <h4 style="color:var(--neon-purple);">COORDINDATORS</h4>
+          <p style="color:var(--text-muted);">CH NAVADEEP: 8886088294 <br>K SIDDARATHA: 6305323077</p>
         </div>
       </div>
-      <div class="timeline-item gsap-timeline">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content glass-card">
-          <h3 style="color:var(--neon-purple); margin-bottom:10px; font-family:var(--font-mono);">02. Prelims Online</h3>
-          <p style="color:var(--text-muted); font-size:0.95rem;">May 6, 2026. Submit your core innovation and unique idea for the first round of judging.</p>
-        </div>
-      </div>
-      <div class="timeline-item gsap-timeline">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content glass-card">
-          <h3 style="color:var(--neon-cyan); margin-bottom:10px; font-family:var(--font-mono);">03. Grand Finale</h3>
-          <p style="color:var(--text-muted); font-size:0.95rem;">May 14 & 15, 2026. The final 36-hour sprint and live pitching session for top teams.</p>
-        </div>
-      </div>
-      <div class="timeline-item gsap-timeline">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content glass-card">
-          <h3 style="color:var(--neon-yellow); margin-bottom:10px; font-family:var(--font-mono);">04. Winners Announced</h3>
-          <p style="color:var(--text-muted); font-size:0.95rem;">Claim your share of ₹30,000+ prize pool, internships, and e-certificates for all.</p>
-        </div>
+    </div>
+    <div class="terminal-container" style="margin-top: 60px;">
+      <div class="terminal-header"><div class="term-btn term-r"></div><div class="term-btn term-y"></div><div class="term-btn term-g"></div></div>
+      <div class="terminal-body" id="term-body">
+        <div class="term-p"><span class="term-prompt">root@skilstation:~#</span> ./run_diagnostics.sh</div>
+        <div class="term-response">> 3000+ Innovators Expected... [OK]</div>
+        <div class="term-response">> 36-Hour Final Sprint Initialized... [OK]</div>
+        <div class="term-response">> E-Certificates Provisioned for all Participants... [OK]</div>
+        <div class="term-p"><span class="term-prompt">root@skilstation:~#</span> <span style="color:var(--neon-cyan); animation:blink 1s infinite;">_</span></div>
       </div>
     </div>
   </section>
