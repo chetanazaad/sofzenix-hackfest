@@ -42,6 +42,18 @@ def create_app():
     app.register_blueprint(scratch_bp)
 
     with app.app_context():
+        # ─── TEMPORARY SCHEMA FIX ───
+        # This fixes the "Failed to add foreign key constraint" error on TiDB
+        from sqlalchemy import text
+        try:
+            # We drop team_members first as it's the one blocking the others
+            db.engine.connect()
+            db.session.execute(text('DROP TABLE IF EXISTS team_members'))
+            db.session.commit()
+            print("[Sofzenix Hackfest] Dropped old team_members table for schema sync.")
+        except Exception as e:
+            print(f"[Sofzenix Hackfest] Schema fix skip/error: {e}")
+
         db.create_all()
         _seed_admin(app)
         _seed_settings()
