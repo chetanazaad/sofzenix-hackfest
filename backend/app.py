@@ -42,17 +42,21 @@ def create_app():
     app.register_blueprint(scratch_bp)
 
     with app.app_context():
-        # ─── TEMPORARY SCHEMA FIX ───
-        # This fixes the "Failed to add foreign key constraint" error on TiDB
+        # ─── AGGRESSIVE SCHEMA FIX ───
         from sqlalchemy import text
         try:
-            # We drop team_members first as it's the one blocking the others
-            db.engine.connect()
-            db.session.execute(text('DROP TABLE IF EXISTS team_members'))
+            # We must disable foreign key checks temporarily to drop blocking tables
+            # Note: TiDB uses SET FOREIGN_KEY_CHECKS=0
+            db.session.execute(text('SET FOREIGN_KEY_CHECKS = 0;'))
+            db.session.execute(text('DROP TABLE IF EXISTS team_members;'))
+            db.session.execute(text('DROP TABLE IF EXISTS scratch_links;'))
+            db.session.execute(text('DROP TABLE IF EXISTS payment_logs;'))
+            db.session.execute(text('DROP TABLE IF EXISTS users;'))
+            db.session.execute(text('SET FOREIGN_KEY_CHECKS = 1;'))
             db.session.commit()
-            print("[Sofzenix Hackfest] Dropped old team_members table for schema sync.")
+            print("[Sofzenix Hackfest] Successfully wiped old schema for fresh TiDB setup.")
         except Exception as e:
-            print(f"[Sofzenix Hackfest] Schema fix skip/error: {e}")
+            print(f"[Sofzenix Hackfest] Schema wipe skip/error: {e}")
 
         db.create_all()
         _seed_admin(app)
