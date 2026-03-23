@@ -280,55 +280,60 @@
           id: '01',
           name: 'PROBLEM IDENTIFICATION',
           title: 'PROBLEM<br>IDENTIFICATION',
-          desc: 'Participants identify a real-world problem that can be solved using innovative technology. The problem should require logical reasoning, real user impact analysis, and technical feasibility.',
+          icon: '💡',
+          desc: 'PARTICIPANTS IDENTIFY A REAL-WORLD PROBLEM THAT CAN BE SOLVED USING AUTONOMOUS AI AGENTS. THE PROBLEM SHOULD REQUIRE MULTI-STEP REASONING, DECISION MAKING, AND INTERACTION WITH EXTERNAL TOOLS.',
           boxes: [
-            { t: 'REAL-WORLD PROBLEM', s: 'Impact Scaling' },
-            { t: 'MARKET NEED', s: 'Current Gaps' },
-            { t: 'INNOVATION', s: 'Unique Approach' }
+            { t: 'REAL-WORLD PROBLEM' },
+            { t: 'MULTI-STEP WORKFLOW' },
+            { t: 'AGENTIC APPROACH' }
           ]
         },
         {
           id: '02',
           name: 'PROPOSED SOLUTION',
           title: 'PROPOSED<br>SOLUTION',
-          desc: 'Teams submit a detailed PDF or presentation describing their proposed solution. This includes core architecture, technology stack, interaction flows, and failure handling mechanisms.',
+          icon: '🗂️',
+          desc: 'TEAMS SUBMIT A 8-SLIDE PDF DESCRIBING THEIR PROPOSED AGENT SYSTEM, INCLUDING AGENT ROLES, TOOL INTEGRATIONS, MEMORY STRATEGY, AND FAILURE HANDLING MECHANISMS.',
           boxes: [
-            { t: 'SYSTEM ARCHITECTURE', s: '' },
-            { t: 'TECH STACK & TOOLS', s: '' },
-            { t: 'SYSTEM DESIGN', s: '' }
+            { t: 'AGENT ARCHITECTURE' },
+            { t: 'MEMORY & TOOLING' },
+            { t: 'SYSTEM DESIGN' }
           ]
         },
         {
           id: '03',
           name: 'TEAM SELECTION',
           title: 'TEAM<br>SELECTION',
-          desc: 'Submissions are evaluated based on innovation quotient, technical feasibility, real-world impact, and scalability. Top selected teams will be invited for the online summer hackathon.',
+          icon: '🔽',
+          desc: 'SUBMISSIONS ARE EVALUATED BASED ON AGENT AUTONOMY, TECHNICAL FEASIBILITY, REAL-WORLD IMPACT, AND SCALABILITY. TOP 100 SELECTED TEAMS WILL BE INVITED FOR OFFLINE HACKATHON.',
           boxes: [
-            { t: 'INNOVATION QUOTIENT', s: '' },
-            { t: 'TECHNICAL DEPTH', s: '' },
-            { t: 'SCALABLE DESIGN', s: '' }
+            { t: 'AGENT AUTONOMY' },
+            { t: 'TECHNICAL DEPTH' },
+            { t: 'SCALABLE DESIGN' }
           ]
         },
         {
           id: '04',
-          name: 'SUMMER HACKATHON',
-          title: 'SUMMER<br>HACKATHON',
-          desc: 'Shortlisted teams participate in the rigorous online summer hackathon where they transform their idea into a working prototype.',
+          name: 'OFFLINE HACKATHON',
+          title: 'OFFLINE<br>HACKATHON',
+          icon: '⚡',
+          desc: 'SHORTLISTED TEAMS PARTICIPATE IN THE 36-HOUR OFFLINE HACKATHON WHERE THEY TRANSFORM THEIR IDEA INTO A WORKING PROTOTYPE OF AN AUTONOMOUS AGENT SYSTEM.',
           boxes: [
-            { t: '36-HOUR BUILD', s: '' },
-            { t: 'LIVE DEVELOPMENT', s: '' },
-            { t: 'MENTOR SUPPORT', s: '' }
+            { t: '36-HOUR BUILD' },
+            { t: 'LIVE DEVELOPMENT' },
+            { t: 'MENTOR SUPPORT' }
           ]
         },
         {
           id: '05',
           name: 'FINAL DEMONSTRATION',
           title: 'FINAL<br>DEMONSTRATION',
-          desc: 'Teams present their working solution to judges. Projects must demonstrate real execution, clean UI/UX, and a complete end-to-end workflow.',
+          icon: '🏆',
+          desc: 'TEAMS PRESENT THEIR WORKING SOLUTION TO JUDGES. PROJECTS MUST DEMONSTRATE AUTONOMOUS TASK EXECUTION, TOOL USAGE, AND A COMPLETE END-TO-END WORKFLOW.',
           boxes: [
-            { t: 'LIVE DEMO', s: '' },
-            { t: 'END-TO-END WORKFLOW', s: '' },
-            { t: 'REAL EXECUTION', s: '' }
+            { t: 'LIVE DEMO' },
+            { t: 'AGENT WORKFLOW' },
+            { t: 'REAL EXECUTION' }
           ]
         }
       ];
@@ -344,22 +349,21 @@
           let boxesHtml = '';
           data.boxes.forEach(b => {
             boxesHtml += `
-              <div style="background: rgba(255,255,255,0.02); padding: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left;">
-                <h5 style="color:#fff; margin-bottom: 5px; font-family:var(--font-mono); font-size: 0.9rem;">${b.t}</h5>
-                ${b.s ? `<p style="font-size: 0.8rem; color:var(--text-muted); margin:0;">${b.s}</p>` : ''}
+              <div style="background: rgba(255,255,255,0.03); padding: 18px 16px; border: 1px solid rgba(255,255,255,0.08); text-align: left;">
+                <h5 style="color:#fff; margin: 0; font-family:var(--font-mono); font-size: 0.85rem; letter-spacing: 0.05em;">${b.t}</h5>
               </div>
             `;
           });
           
           tabContent.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap: wrap;">
-              <h2 style="color:#fff; font-size: clamp(1.8rem, 5vw, 2.5rem); line-height: 1.1; margin-bottom:20px; word-break: break-word;">${data.title}</h2>
-              <span style="color:var(--neon-cyan); font-size: 2rem;">⚡</span>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap: wrap; gap: 10px;">
+              <h2 style="color:#fff; font-size: clamp(1.8rem, 5vw, 2.6rem); line-height: 1.1; margin-bottom:20px; word-break: break-word; font-family: var(--font-mono); text-transform: uppercase;">${data.title}</h2>
+              <div style="background: rgba(0,245,255,0.1); border: 1px solid rgba(0,245,255,0.3); padding: 10px 14px; border-radius: 8px; font-size: 1.5rem; flex-shrink: 0;">${data.icon}</div>
             </div>
-            <p style="color:var(--text-muted); line-height: 1.8; margin-bottom: 30px; border-left: 2px solid var(--neon-cyan); padding-left: 15px; font-size: 0.95rem; word-break: break-word;">
+            <p style="color:var(--text-muted); line-height: 1.9; margin-bottom: 30px; border-left: 2px solid var(--neon-cyan); padding-left: 15px; font-size: 0.9rem; word-break: break-word; letter-spacing: 0.03em; text-transform: uppercase; font-family: var(--font-mono);">
               ${data.desc}
             </p>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px;">
               ${boxesHtml}
             </div>
           `;
