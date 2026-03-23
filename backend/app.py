@@ -42,34 +42,7 @@ def create_app():
     app.register_blueprint(scratch_bp)
 
     with app.app_context():
-        # ─── FORCE FRESH DATABASE ───
-        from sqlalchemy import text
-        import random, string, time
-        suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
-        new_db_name = f"sofzenix_v_{suffix}"
-        
-        try:
-            from sqlalchemy import create_engine
-            # Connect to TiDB root to create a UNIQUE fresh DB
-            base_uri = Config.SQLALCHEMY_DATABASE_URI.rsplit('/', 1)[0] + '/mysql'
-            temp_engine = create_engine(base_uri, connect_args={"ssl": {"ca": "ca.pem"}})
-            with temp_engine.connect() as conn:
-                conn.execute(text("SET FOREIGN_KEY_CHECKS = 0;"))
-                conn.execute(text(f"CREATE DATABASE {new_db_name};"))
-                conn.commit()
-            
-            # Switch the app and its engine to use this new UNIQUE database
-            new_uri = Config.SQLALCHEMY_DATABASE_URI.rsplit('/', 1)[0] + f'/{new_db_name}?ssl_ca=ca.pem'
-            app.config['SQLALCHEMY_DATABASE_URI'] = new_uri
-            db.engine = create_engine(new_uri, connect_args={"ssl": {"ca": "ca.pem"}})
-            
-            # Small delay to let TiDB propagate the new DB
-            time.sleep(2)
-            print(f"[Sofzenix Hackfest] Created and verified UNIQUE fresh database: {new_db_name}")
-        except Exception as e:
-            print(f"[Sofzenix Hackfest] DB Creation info: {e}")
-
-        # Final check if tables need to be created
+        # Tables have been wiped by admin script. Create standard schema.
         db.create_all()
         _seed_admin(app)
         _seed_settings()

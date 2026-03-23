@@ -23,7 +23,7 @@ def _build_db_uri() -> str:
     port     = os.environ.get('DB_PORT', '4000')
     user     = os.environ.get('DB_USER', 'root')
     password = os.environ.get('DB_PASSWORD', '')
-    name     = os.environ.get('DB_NAME', 'sofzenix_hackfest_live')
+    name     = os.environ.get('DB_NAME', 'test')
 
     if host:
         # TiDB Cloud requires SSL
