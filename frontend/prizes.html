@@ -253,40 +253,166 @@
     <a href="login.html">Login</a>
     <a href="register.html">Register</a>
   </div>
-
   <div style="padding-top: 100px;"></div>
 
-  <!-- Prizes Section -->
-  <section id="prizes" class="gsap-fade" style="padding: 80px 20px; background: rgba(10, 10, 15, 0.5);">
-    <h2 style="text-align:center; font-family:var(--font-mono); color:#fff; margin-bottom:40px;">// PRIZE_POOL</h2>
-    <div style="max-width: 900px; margin: 0 auto; display: grid; gap: 20px;">
-      <div class="glass-card" style="display: flex; align-items: center; justify-content: space-between; padding: 25px 40px; flex-wrap: wrap; gap: 15px;">
-        <div>
-          <h3 style="color:var(--neon-yellow); font-size: 1.5rem;">🏆 Grand Champion</h3>
-          <p style="color:var(--text-muted);">Top Innovation & Execution</p>
-        </div>
-        <div style="font-family:var(--font-mono); font-size: 1.8rem; color:#fff;">₹15,000</div>
-      </div>
-      <div class="glass-card" style="display: flex; align-items: center; justify-content: space-between; padding: 25px 40px; flex-wrap: wrap; gap: 15px;">
-        <div>
-          <h3 style="color:#e0e0e0; font-size: 1.5rem;">🥈 Second Winner</h3>
-          <p style="color:var(--text-muted);">Outstanding Technical Implementation</p>
-        </div>
-        <div style="font-family:var(--font-mono); font-size: 1.8rem; color:#fff;">₹10,000</div>
-      </div>
-      <div class="glass-card" style="display: flex; align-items: center; justify-content: space-between; padding: 25px 40px; flex-wrap: wrap; gap: 15px;">
-        <div>
-          <h3 style="color:#cd7f32; font-size: 1.5rem;">🥉 Third Winner</h3>
-          <p style="color:var(--text-muted);">Remarkable Creativity & Impact</p>
-        </div>
-        <div style="font-family:var(--font-mono); font-size: 1.8rem; color:#fff;">₹5,000</div>
-      </div>
-      <div style="text-align:center; margin-top: 20px; color:var(--text-muted);">
-        <p>+ Internship Opportunities, Vouchers & E-Certificates for all participants.</p>
-      </div>
-    </div>
+  <!-- ── PRIZES HERO ─────────────────────────────── -->
+  <section style="padding: 60px 20px 0; text-align: center; position: relative;">
+    <div style="position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,215,0,0.07) 0%, transparent 70%); pointer-events:none;"></div>
+    <p style="font-family:var(--font-mono); color: var(--neon-cyan); font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px;">// PRIZE_POOL</p>
+    <h1 style="font-family:var(--font-mono); font-size: clamp(2.5rem, 8vw, 5rem); color:#fff; margin: 0; line-height:1; text-shadow: 0 0 40px rgba(255,215,0,0.3);">
+      WIN BIG.<br><span style="color: #FFD700;">₹30,000+</span>
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1rem; margin-top: 16px; max-width: 500px; margin-left: auto; margin-right: auto;">
+      Compete, innovate and take home cash prizes, internships, and exclusive rewards.
+    </p>
   </section>
 
+  <!-- ── PODIUM CARDS ────────────────────────────── -->
+  <section style="padding: 60px 20px; max-width: 1100px; margin: 0 auto;">
+
+    <!-- Top 3 Podium Row -->
+    <div style="display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap; justify-content: center; margin-bottom: 40px;">
+
+      <!-- 2nd Place -->
+      <div class="prize-card" style="
+        flex: 1; min-width: 240px; max-width: 320px;
+        background: linear-gradient(160deg, rgba(20,20,30,0.9) 0%, rgba(180,180,200,0.05) 100%);
+        border: 1px solid rgba(200,200,220,0.3);
+        border-radius: 16px; padding: 36px 28px 28px;
+        position: relative; overflow: hidden;
+        box-shadow: 0 0 30px rgba(180,180,200,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: default;
+      ">
+        <div style="position:absolute; top:-40px; right:-40px; width:120px; height:120px; border-radius:50%; background: radial-gradient(circle, rgba(200,200,220,0.2), transparent); pointer-events:none;"></div>
+        <div style="font-size: 3rem; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(200,200,200,0.5));">🥈</div>
+        <div style="font-family:var(--font-mono); font-size: 0.7rem; letter-spacing: 0.15em; color:#aaa; text-transform:uppercase; margin-bottom: 6px;">2nd Place</div>
+        <div style="font-family:var(--font-mono); font-size: 2.4rem; font-weight: 800; color: #e0e0e0; line-height:1; margin-bottom: 8px;">₹10,000</div>
+        <div style="color: #888; font-size: 0.82rem; margin-bottom: 20px;">Outstanding Technical Implementation</div>
+        <div style="border-top: 1px solid rgba(200,200,200,0.15); padding-top: 16px;">
+          <div style="font-size: 0.78rem; color:#aaa; display: flex; align-items: center; gap: 8px; margin-bottom: 6px;"><span style="color:#4caf50;">✓</span> Cash Prize</div>
+          <div style="font-size: 0.78rem; color:#aaa; display: flex; align-items: center; gap: 8px; margin-bottom: 6px;"><span style="color:#4caf50;">✓</span> E-Certificate</div>
+          <div style="font-size: 0.78rem; color:#aaa; display: flex; align-items: center; gap: 8px;"><span style="color:#4caf50;">✓</span> Course Vouchers</div>
+        </div>
+      </div>
+
+      <!-- 1st Place (tallest card) -->
+      <div class="prize-card" style="
+        flex: 1; min-width: 280px; max-width: 360px;
+        background: linear-gradient(160deg, rgba(30,25,5,0.95) 0%, rgba(255,200,0,0.06) 100%);
+        border: 1px solid rgba(255,215,0,0.5);
+        border-radius: 16px; padding: 50px 32px 32px;
+        position: relative; overflow: hidden;
+        box-shadow: 0 0 60px rgba(255,215,0,0.2), 0 0 120px rgba(255,215,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: default;
+      ">
+        <div style="position:absolute; top: 0; left:0; right:0; height: 3px; background: linear-gradient(90deg, transparent, #FFD700, transparent);"></div>
+        <div style="position:absolute; top:-50px; right:-50px; width:160px; height:160px; border-radius:50%; background: radial-gradient(circle, rgba(255,215,0,0.18), transparent); pointer-events:none;"></div>
+        <div style="position:absolute; top: 14px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, #FFD700, #ffaa00); color:#000; font-family:var(--font-mono); font-size: 0.65rem; font-weight: 800; padding: 3px 14px; border-radius: 20px; letter-spacing: 0.1em; white-space: nowrap;">⚡ GRAND CHAMPION</div>
+        <div style="font-size: 3.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 20px rgba(255,215,0,0.8));">🏆</div>
+        <div style="font-family:var(--font-mono); font-size: 0.7rem; letter-spacing: 0.15em; color: #FFD700; text-transform:uppercase; margin-bottom: 6px;">1st Place</div>
+        <div style="font-family:var(--font-mono); font-size: 3rem; font-weight: 800; color: #FFD700; line-height:1; margin-bottom: 8px; text-shadow: 0 0 20px rgba(255,215,0,0.4);">₹15,000</div>
+        <div style="color: #bba; font-size: 0.85rem; margin-bottom: 24px;">Top Innovation &amp; Best Execution</div>
+        <div style="border-top: 1px solid rgba(255,215,0,0.2); padding-top: 18px;">
+          <div style="font-size: 0.8rem; color:#ccc; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="color:#FFD700;">★</span> Cash Prize</div>
+          <div style="font-size: 0.8rem; color:#ccc; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="color:#FFD700;">★</span> Internship with Stipend</div>
+          <div style="font-size: 0.8rem; color:#ccc; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="color:#FFD700;">★</span> E-Certificate</div>
+          <div style="font-size: 0.8rem; color:#ccc; display: flex; align-items: center; gap: 8px;"><span style="color:#FFD700;">★</span> Premium Course Vouchers</div>
+        </div>
+      </div>
+
+      <!-- 3rd Place -->
+      <div class="prize-card" style="
+        flex: 1; min-width: 240px; max-width: 320px;
+        background: linear-gradient(160deg, rgba(25,15,5,0.9) 0%, rgba(205,127,50,0.05) 100%);
+        border: 1px solid rgba(205,127,50,0.35);
+        border-radius: 16px; padding: 36px 28px 28px;
+        position: relative; overflow: hidden;
+        box-shadow: 0 0 30px rgba(205,127,50,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: default;
+      ">
+        <div style="position:absolute; top:-40px; right:-40px; width:120px; height:120px; border-radius:50%; background: radial-gradient(circle, rgba(205,127,50,0.2), transparent); pointer-events:none;"></div>
+        <div style="font-size: 3rem; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(205,127,50,0.5));">🥉</div>
+        <div style="font-family:var(--font-mono); font-size: 0.7rem; letter-spacing: 0.15em; color:#cd7f32; text-transform:uppercase; margin-bottom: 6px;">3rd Place</div>
+        <div style="font-family:var(--font-mono); font-size: 2.4rem; font-weight: 800; color: #cd7f32; line-height:1; margin-bottom: 8px;">₹5,000</div>
+        <div style="color: #888; font-size: 0.82rem; margin-bottom: 20px;">Remarkable Creativity &amp; Impact</div>
+        <div style="border-top: 1px solid rgba(205,127,50,0.2); padding-top: 16px;">
+          <div style="font-size: 0.78rem; color:#aaa; display: flex; align-items: center; gap: 8px; margin-bottom: 6px;"><span style="color:#4caf50;">✓</span> Cash Prize</div>
+          <div style="font-size: 0.78rem; color:#aaa; display: flex; align-items: center; gap: 8px; margin-bottom: 6px;"><span style="color:#4caf50;">✓</span> E-Certificate</div>
+          <div style="font-size: 0.78rem; color:#aaa; display: flex; align-items: center; gap: 8px;"><span style="color:#4caf50;">✓</span> Course Vouchers</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── BONUS PERKS ROW ─────── -->
+    <div style="margin-top: 20px;">
+      <p style="font-family:var(--font-mono); text-align:center; color:var(--text-muted); font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom: 20px;">// EVERY PARTICIPANT GETS</p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+
+        <div style="background: rgba(0,245,255,0.04); border: 1px solid rgba(0,245,255,0.15); border-radius: 12px; padding: 20px; text-align:center; transition: border-color 0.3s ease;" onmouseover="this.style.borderColor='rgba(0,245,255,0.4)'" onmouseout="this.style.borderColor='rgba(0,245,255,0.15)'">
+          <div style="font-size: 2rem; margin-bottom: 8px;">📜</div>
+          <div style="font-family:var(--font-mono); font-size:0.8rem; color:#fff; font-weight:600;">E-Certificate</div>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-top: 4px;">For all participants</div>
+        </div>
+
+        <div style="background: rgba(0,245,255,0.04); border: 1px solid rgba(0,245,255,0.15); border-radius: 12px; padding: 20px; text-align:center; transition: border-color 0.3s ease;" onmouseover="this.style.borderColor='rgba(0,245,255,0.4)'" onmouseout="this.style.borderColor='rgba(0,245,255,0.15)'">
+          <div style="font-size: 2rem; margin-bottom: 8px;">💼</div>
+          <div style="font-family:var(--font-mono); font-size:0.8rem; color:#fff; font-weight:600;">Internship</div>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-top: 4px;">With stipend for winners</div>
+        </div>
+
+        <div style="background: rgba(0,245,255,0.04); border: 1px solid rgba(0,245,255,0.15); border-radius: 12px; padding: 20px; text-align:center; transition: border-color 0.3s ease;" onmouseover="this.style.borderColor='rgba(0,245,255,0.4)'" onmouseout="this.style.borderColor='rgba(0,245,255,0.15)'">
+          <div style="font-size: 2rem; margin-bottom: 8px;">🎓</div>
+          <div style="font-family:var(--font-mono); font-size:0.8rem; color:#fff; font-weight:600;">Course Vouchers</div>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-top: 4px;">Top teams get premium access</div>
+        </div>
+
+        <div style="background: rgba(0,245,255,0.04); border: 1px solid rgba(0,245,255,0.15); border-radius: 12px; padding: 20px; text-align:center; transition: border-color 0.3s ease;" onmouseover="this.style.borderColor='rgba(0,245,255,0.4)'" onmouseout="this.style.borderColor='rgba(0,245,255,0.15)'">
+          <div style="font-size: 2rem; margin-bottom: 8px;">🌐</div>
+          <div style="font-family:var(--font-mono); font-size:0.8rem; color:#fff; font-weight:600;">100% Online</div>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-top: 4px;">Compete from anywhere</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── CTA ──── -->
+    <div style="text-align: center; margin-top: 60px; padding: 50px 20px; background: linear-gradient(135deg, rgba(0,245,255,0.04), rgba(255,215,0,0.04)); border: 1px solid rgba(255,215,0,0.15); border-radius: 16px;">
+      <p style="font-family:var(--font-mono); color:var(--text-muted); font-size:0.75rem; letter-spacing:0.2em; margin-bottom: 12px;">// REGISTRATION_OPEN</p>
+      <h2 style="font-family:var(--font-mono); color:#fff; font-size: clamp(1.4rem, 4vw, 2.2rem); margin-bottom: 8px;">Ready to Compete?</h2>
+      <p style="color:var(--text-muted); margin-bottom: 28px; font-size: 0.9rem;">Registration closes <span style="color:var(--neon-cyan); font-weight:600;">27 April 2026</span>. Fee: ₹99 individual / ₹349 per team.</p>
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+        <a href="register.html" style="display:inline-block; padding: 14px 36px; background: linear-gradient(90deg, #FFD700, #ffaa00); color: #000; font-family:var(--font-mono); font-size: 0.9rem; font-weight:800; border-radius: 30px; text-decoration: none; letter-spacing:0.05em; box-shadow: 0 0 25px rgba(255,215,0,0.3); transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 0 45px rgba(255,215,0,0.5)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 0 25px rgba(255,215,0,0.3)'">
+          ⚡ Register Now
+        </a>
+        <a href="selection.html" style="display:inline-block; padding: 14px 36px; border: 1px solid rgba(0,245,255,0.4); color: var(--neon-cyan); font-family:var(--font-mono); font-size: 0.9rem; border-radius: 30px; text-decoration: none; letter-spacing:0.05em; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(0,245,255,0.1)'" onmouseout="this.style.background='transparent'">
+          View Selection Process →
+        </a>
+      </div>
+    </div>
+
+  </section>
+
+  <style>
+    .prize-card:hover {
+      transform: translateY(-8px) !important;
+    }
+    .prize-card:nth-child(2):hover {
+      box-shadow: 0 0 80px rgba(255,215,0,0.35), 0 0 140px rgba(255,215,0,0.1) !important;
+    }
+    .prize-card:nth-child(1):hover {
+      box-shadow: 0 0 40px rgba(200,200,220,0.18) !important;
+    }
+    .prize-card:nth-child(3):hover {
+      box-shadow: 0 0 40px rgba(205,127,50,0.18) !important;
+    }
+    @media (max-width: 600px) {
+      .prize-card { order: 0; }
+    }
+  </style>
   <footer class="site-footer" style="margin-top: 50px;">
     Copyright &copy; 2026 <b>Sofzenix IT Solution LLP</b>
   </footer>
