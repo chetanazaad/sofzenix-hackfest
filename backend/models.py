@@ -55,7 +55,7 @@ class ScratchLink(db.Model):
     created_at       = db.Column(db.DateTime, default=datetime.utcnow)
     used_at          = db.Column(db.DateTime, nullable=True)
     recipient_upi    = db.Column(db.String(100), nullable=True)
-    submitted_phone  = db.Column(db.String(15), nullable=True)
+    submitted_phone  = db.Column(db.String(255), nullable=True)
     payment_status   = db.Column(db.String(30), default='pending')
     payment_ref      = db.Column(db.String(100), nullable=True)
 
@@ -113,7 +113,7 @@ class TeamMember(db.Model):
     leader_id  = db.Column(db.Integer, db.ForeignKey('sfz_users.id'), nullable=False)
     name       = db.Column(db.String(255), nullable=False)
     email      = db.Column(db.String(255), nullable=False)
-    phone      = db.Column(db.String(15), nullable=False)
+    phone      = db.Column(db.String(255), nullable=False)
     added_at   = db.Column(db.DateTime, default=datetime.utcnow)
 
     leader = db.relationship('User', backref=db.backref('team_extra_members', lazy=True))
