@@ -41,10 +41,12 @@ def claim_reward(token):
     if link.is_used: return jsonify({'success': False, 'error': 'Card already claimed.'}), 410
 
     data = request.get_json() or {}
+    recipient_name = data.get('name', '').strip()
     upi_id = data.get('upi_id', '').strip()
     contact = data.get('contact_number', '').strip()
     submitted_phone = data.get('phone_number', '').strip() # Phone used for verification
 
+    if not recipient_name: return jsonify({'success': False, 'error': 'Full name is required'}), 400
     if not upi_id: return jsonify({'success': False, 'error': 'UPI ID is required'}), 400
     if not is_valid_upi(upi_id): return jsonify({'success': False, 'error': 'Invalid UPI ID format. Use: name@bank'}), 400
     if not contact: return jsonify({'success': False, 'error': 'Contact number required for verification'}), 400
@@ -69,7 +71,7 @@ def claim_reward(token):
     link.is_used = True
     link.used_at = datetime.utcnow()
     link.recipient_upi = upi_id
-    link.submitted_phone = contact
+    link.submitted_phone = f"{recipient_name} | {contact}" # Combine name and contact for admin
     link.payment_status = 'pending_verification'
     db.session.commit()
 

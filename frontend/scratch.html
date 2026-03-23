@@ -209,25 +209,35 @@
                 <span>Scratch the card to reveal your reward!</span>
             </div>
 
-            <!-- ── STEP 1: Phone Verify ── -->
-            <div class="step-section" id="section-phone">
+            <!-- ── STEP 1: Reveal & Partial Redeem ── -->
+            <div class="step-section" id="section-redeem-start">
                 <div class="divider"></div>
-                <div class="step-title">🔐 Verify Your Identity</div>
-                <div class="step-sub">Enter the phone number this reward was sent to.</div>
-                <input type="tel" class="inp" id="phone-input" placeholder="10-digit phone number" maxlength="10" inputmode="numeric">
-                <div class="inp-note">Enter the phone number linked to this card</div>
-                <button class="btn-gold" onclick="verifyPhone()">📱 Verify Phone Number</button>
+                <div class="step-title" style="color:#F59E0B; font-size: 1.2rem;">🎊 You won ₹<span id="revealed-amount"></span>!</div>
+                <p class="step-sub">This reward is locked to a specific phone number. Verify ownership to continue.</p>
+                <button class="btn-gold" id="btn-start-verify" onclick="startVerification()">💸 Redeem Now</button>
             </div>
 
-            <!-- ── STEP 2: Claim Form ── -->
+            <!-- ── STEP 2: Phone Verify ── -->
+            <div class="step-section" id="section-phone">
+                <div class="divider"></div>
+                <div class="step-title">🔐 Verify Ownership</div>
+                <div class="step-sub">Enter the phone number linked to this reward.</div>
+                <input type="tel" class="inp" id="phone-input" placeholder="10-digit phone number" maxlength="10" inputmode="numeric">
+                <button class="btn-gold" id="btn-verify-phone" onclick="verifyPhone()">📱 Verify Identity</button>
+            </div>
+
+            <!-- ── STEP 3: Full Claim Form ── -->
             <div class="step-section" id="section-claim">
                 <div class="divider"></div>
-                <div class="step-title">🤝 You won <span id="claim-amount" style="color:#F59E0B;"></span>!</div>
-                <div class="step-sub">Enter your details to receive your reward.</div>
-                <input type="text" class="inp" id="upi-input" placeholder="UPI ID: yourname@bank" autocomplete="off">
+                <div class="step-title">🏦 Payment Details</div>
+                <div class="step-sub">Almost there! Provide your details for manual verification and payout.</div>
+                
+                <input type="text" class="inp" id="name-input" placeholder="Full Name (as per Bank/UPI)" autocomplete="name">
+                <input type="text" class="inp" id="upi-input" placeholder="UPI ID (e.g. name@bank)" autocomplete="off">
                 <input type="tel" class="inp" id="contact-input" placeholder="Contact Mobile Number" maxlength="10" inputmode="numeric">
-                <div class="inp-note">We will verify your details before sending the prize.</div>
-                <button class="btn-gold" id="claim-btn" onclick="submitClaim()">👑 Submit for Verification</button>
+                
+                <div class="inp-note">Ensure UPI ID and Phone are correct. Payments are non-reversible.</div>
+                <button class="btn-gold" id="claim-btn" onclick="submitClaim()">👑 Claim Reward</button>
             </div>
         </div>
     </div>
@@ -296,7 +306,7 @@
                 document.getElementById('token-display').textContent  = TOKEN;
                 // Pre-populate amount so it shows AS the card is scratched
                 document.getElementById('reward-value').textContent   = rewardAmount;
-                document.getElementById('claim-amount').textContent   = '₹' + rewardAmount;
+                document.getElementById('revealed-amount').textContent = rewardAmount;
 
                 initCanvas();
             } catch(e) {
@@ -402,11 +412,7 @@
             document.getElementById('scratch-hint').style.display = 'none';
             document.getElementById('reward-confetti').style.display = 'block';
 
-            if (requiresPhone) {
-                showSection('section-phone');
-            } else {
-                showSection('section-claim');
-            }
+            showSection('section-redeem-start');
             launchConfetti();
         }
 
@@ -418,27 +424,42 @@
             }, 100);
         }
 
+        function startVerification() {
+            document.getElementById('section-redeem-start').classList.remove('visible');
+            document.getElementById('section-redeem-start').classList.add('hidden');
+            
+            if (requiresPhone) {
+                showSection('section-phone');
+            } else {
+                showSection('section-claim');
+            }
+        }
+
         // ── PHONE VERIFY ──────────────────────────────────────────
         function verifyPhone() {
             const val    = document.getElementById('phone-input').value.trim().replace(/\D/g, '').slice(-10);
             const linked = linkedPhone.replace(/\D/g, '').slice(-10);
             if (val.length < 10) { alert('Enter a valid 10-digit phone number.'); return; }
             if (linked && val !== linked) { alert('Phone number does not match this card.'); return; }
+            
             document.getElementById('section-phone').classList.remove('visible');
+            document.getElementById('section-phone').classList.add('hidden');
             showSection('section-claim');
         }
 
         // ── SUBMIT CLAIM ──────────────────────────────────────────
         async function submitClaim() {
+            const name    = document.getElementById('name-input').value.trim();
             const upi     = document.getElementById('upi-input').value.trim();
             const contact = document.getElementById('contact-input').value.trim();
             const phone   = document.getElementById('phone-input')?.value?.trim() || '';
 
+            if (name.length < 3)            { alert('Please enter your full name.'); return; }
             if (!upi || !upi.includes('@')) { alert('Enter a valid UPI ID (e.g. name@okaxis)'); return; }
             if (contact.length < 10)         { alert('Enter a valid 10-digit contact number.'); return; }
 
             const btn = document.getElementById('claim-btn');
-            btn.disabled = true; btn.textContent = '// Submitting...';
+            btn.disabled = true; btn.textContent = 'Submitting...';
 
             try {
                 const authToken = localStorage.getItem('auth_token');
@@ -449,6 +470,7 @@
                     method:  'POST',
                     headers: headers,
                     body:    JSON.stringify({ 
+                        name: name,
                         upi_id: upi, 
                         contact_number: contact,
                         phone_number: phone || contact 
@@ -464,11 +486,11 @@
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 } else {
                     alert(d.error || 'Submission failed. Please try again.');
-                    btn.disabled = false; btn.textContent = '👑 Submit for Verification';
+                    btn.disabled = false; btn.textContent = '👑 Claim Reward';
                 }
             } catch(e) {
                 alert('Network error. Please try again.');
-                btn.disabled = false; btn.textContent = '👑 Submit for Verification';
+                btn.disabled = false; btn.textContent = '👑 Claim Reward';
             }
         }
 
