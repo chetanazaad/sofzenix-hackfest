@@ -42,8 +42,23 @@ def create_app():
     app.register_blueprint(scratch_bp)
 
     with app.app_context():
-        # Tables have been wiped by admin script. Create standard schema.
+        # 1. Ensure all tables exist
         db.create_all()
+        
+        # 2. AUTO-MIGRATION: Force expand the submitted_phone column if it's still length 15
+        from sqlalchemy import text
+        try:
+            # Check current column length (MySQL/TiDB syntax)
+            # We use text() to run a raw SQL expansion safely
+            db.session.execute(text("ALTER TABLE sfz_scratch_links MODIFY COLUMN submitted_phone VARCHAR(255);"))
+            db.session.execute(text("ALTER TABLE sfz_team_members MODIFY COLUMN phone VARCHAR(255);"))
+            db.session.commit()
+            print("[Sofzenix HackFest] Database columns expanded successfully.")
+        except Exception as e:
+            # Table might not exist yet or dialect might differ (SQLite/Postgres)
+            db.session.rollback()
+            print(f"[Sofzenix HackFest] Column fix not required or failed: {str(e)[:50]}")
+
         _seed_admin(app)
         _seed_settings()
 
