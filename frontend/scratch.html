@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scratch & Win — Sofzenix HackFest</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/main.css" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0d0b1e;
+            color: #f0eef8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: radial-gradient(ellipse at 20% 20%, rgba(139,92,246,0.15) 0%, transparent 50%),
+                              radial-gradient(ellipse at 80% 80%, rgba(139,92,246,0.08) 0%, transparent 50%);
+        }
+
+        /* ── Header ── */
+        .page-header { text-align: center; padding: 40px 20px 24px; }
+        .brand { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 900;
+                 background: linear-gradient(135deg, #A855F7, #F59E0B);
+                 -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .brand-sub { color: rgba(240,238,248,0.5); font-size: 14px; margin-top: 4px; }
+
+        /* ── Card wrapper ── */
+        .card-wrap { width: 100%; max-width: 440px; padding: 0 16px 80px; }
+
+        .card {
+            background: linear-gradient(135deg, #1a1535, #120f28);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 28px 24px;
+            box-shadow: 0 0 40px rgba(139,92,246,0.2), 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        /* ── Token Row ── */
+        .token-row { display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; font-size: 13px; }
+        .token-val { color: #A855F7; font-weight: 700; }
+        .badge-active { background: rgba(245,158,11,0.15); color: #F59E0B;
+                        border: 1px solid rgba(245,158,11,0.4); padding: 4px 10px;
+                        border-radius: 20px; font-size: 11px; font-weight: 700; }
+
+        /* ── Reward Box ── */
+        .reward-box {
+            position: relative;
+            height: 200px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #1a1230, #0f0a1e);
+            border: 2px solid rgba(245,158,11,0.3);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .reward-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+                        color: rgba(240,238,248,0.45); margin-bottom: 10px; }
+        .reward-amount { display: flex; align-items: baseline; gap: 4px;
+                         font-family: 'Outfit', sans-serif; font-weight: 900; color: #FFB800;
+                         text-shadow: 0 0 40px rgba(255,184,0,0.5); }
+        .reward-rupee { font-size: 2.2rem; }
+        .reward-value { font-size: 4.5rem; }
+        .reward-confetti { font-size: 2rem; margin-top: 8px; display: none; }
+        #scratch-canvas { position: absolute; inset: 0; border-radius: 13px;
+                          touch-action: none; cursor: crosshair; z-index: 10; }
+
+        /* ── Progress ── */
+        .progress-wrap { height: 4px; background: rgba(255,255,255,0.07); border-radius: 2px; margin-bottom: 16px; }
+        .progress-bar { height: 100%; width: 0%; border-radius: 2px;
+                        background: linear-gradient(90deg, #7C3AED, #F59E0B); transition: width 0.1s; }
+
+        /* ── Hint text ── */
+        .scratch-hint { display: flex; align-items: center; gap: 8px;
+                        color: rgba(240,238,248,0.5); font-size: 13px; margin-bottom: 20px; }
+        .hint-dot { width: 8px; height: 8px; border-radius: 50%; background: #A855F7;
+                    animation: blink 1.2s ease-in-out infinite; flex-shrink: 0; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+        /* ── Step Sections ── */
+        .step-section { display: none; animation: slideUp 0.4s ease; }
+        .step-section.visible { display: block; }
+        @keyframes slideUp { from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:translateY(0); } }
+
+        /* Divider */
+        .divider { height: 2px; background: linear-gradient(90deg, #7C3AED, #F59E0B);
+                   border-radius: 2px; margin-bottom: 20px; }
+
+        .step-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+        .step-sub { color: rgba(240,238,248,0.5); font-size: 13px; margin-bottom: 16px; line-height: 1.5; }
+
+        .inp {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: #f0eef8;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 12px;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .inp:focus { border-color: #A855F7; }
+        .inp::placeholder { color: rgba(240,238,248,0.3); }
+        .inp-note { font-size: 11px; color: rgba(240,238,248,0.35); margin-top: -6px; margin-bottom: 14px; }
+
+        .btn-gold {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: #1a0f00;
+            font-weight: 700;
+            font-size: 15px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 20px rgba(245,158,11,0.3);
+            transition: opacity .2s;
+        }
+        .btn-gold:hover { opacity: .9; }
+        .btn-gold:disabled { opacity: .5; cursor: not-allowed; }
+
+        /* ── Result Screen ── */
+        #result-screen { display: none; }
+        .result-wrap {
+            background: linear-gradient(135deg, #1a1535, #120f28);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 48px 28px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(139,92,246,0.2);
+        }
+        .result-icon-box { width: 72px; height: 72px; background: linear-gradient(135deg,#10B981,#059669);
+                           border-radius: 18px; display: flex; align-items: center; justify-content: center;
+                           font-size: 2.2rem; margin: 0 auto 20px;
+                           box-shadow: 0 8px 32px rgba(16,185,129,0.4); }
+        .result-title { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 900; margin-bottom: 10px; }
+        .result-amount { font-family: 'Outfit', sans-serif; font-size: 2.2rem; font-weight: 900; color: #F59E0B; margin-bottom: 6px; }
+        .result-token { font-size: 11px; color: rgba(240,238,248,0.35); margin-bottom: 20px; }
+        .result-note { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25);
+                       border-radius: 10px; padding: 14px 16px; font-size: 13px; color: rgba(240,238,248,0.7); line-height: 1.6; }
+
+        /* ── Confetti ── */
+        .confetti-particle { position: fixed; pointer-events: none; animation: confettiFall linear forwards; z-index: 9999; }
+        @keyframes confettiFall { 0%{transform:translateY(-10vh) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
+
+        /* ── Loading ── */
+        #loading-screen { padding: 60px 20px; text-align: center; width: 100%; max-width: 440px; }
+        .spinner { width: 36px; height: 36px; border-radius: 50%;
+                   border: 3px solid rgba(255,255,255,0.1); border-top-color: #A855F7;
+                   animation: spin .8s linear infinite; margin: 0 auto 14px; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+
+        footer { margin-top: auto; padding: 24px; font-size: 12px; color: rgba(240,238,248,0.3); text-align: center; }
+        footer a { color: #A855F7; text-decoration: none; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="brand">⚡ Sofzenix HackFest</div>
+        <div class="brand-sub">Your exclusive reward is waiting!</div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <p style="color:rgba(240,238,248,0.4);">Validating your card...</p>
+    </div>
+
+    <!-- Scratch Card -->
+    <div class="card-wrap hidden" id="scratch-screen">
+        <div class="card">
+            <!-- Token -->
+            <div class="token-row">
+                <span style="color:rgba(240,238,248,0.45);">Token: <span class="token-val" id="token-display"></span></span>
+                <span class="badge-active">🎴 ACTIVE</span>
+            </div>
+
+            <!-- Reward Box with Canvas -->
+            <div class="reward-box" id="reward-box">
+                <div class="reward-label">Your Reward</div>
+                <div class="reward-amount">
+                    <span class="reward-rupee">₹</span>
+                    <span class="reward-value" id="reward-value">---</span>
+                </div>
+                <div class="reward-confetti" id="reward-confetti">🎉</div>
+                <canvas id="scratch-canvas"></canvas>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-wrap">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <!-- Scratch Hint -->
+            <div class="scratch-hint" id="scratch-hint">
+                <div class="hint-dot"></div>
+                <span>Scratch the card to reveal your reward!</span>
+            </div>
+
+            <!-- ── STEP 1: Phone Verify ── -->
+            <div class="step-section" id="section-phone">
+                <div class="divider"></div>
+                <div class="step-title">🔐 Verify Your Identity</div>
+                <div class="step-sub">Enter the phone number this reward was sent to.</div>
+                <input type="tel" class="inp" id="phone-input" placeholder="10-digit phone number" maxlength="10" inputmode="numeric">
+                <div class="inp-note">Enter the phone number linked to this card</div>
+                <button class="btn-gold" onclick="verifyPhone()">📱 Verify Phone Number</button>
+            </div>
+
+            <!-- ── STEP 2: Claim Form ── -->
+            <div class="step-section" id="section-claim">
+                <div class="divider"></div>
+                <div class="step-title">🤝 You won <span id="claim-amount" style="color:#F59E0B;"></span>!</div>
+                <div class="step-sub">Enter your details to receive your reward.</div>
+                <input type="text" class="inp" id="upi-input" placeholder="UPI ID: yourname@bank" autocomplete="off">
+                <input type="tel" class="inp" id="contact-input" placeholder="Contact Mobile Number" maxlength="10" inputmode="numeric">
+                <div class="inp-note">We will verify your details before sending the prize.</div>
+                <button class="btn-gold" id="claim-btn" onclick="submitClaim()">👑 Submit for Verification</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div class="card-wrap hidden" id="result-screen">
+        <div class="result-wrap">
+            <div class="result-icon-box">✅</div>
+            <div class="result-title">Request Received</div>
+            <div class="result-amount" id="result-amount"></div>
+            <div class="result-token" id="result-token"></div>
+            <div class="result-note">
+                Your reward status is now: <strong>Pending Verification</strong>.<br>
+                We will process your payout within 24–48 hours after verifying your contact details.
+            </div>
+        </div>
+    </div>
+
+    <footer>Powered by <a href="https://www.sofzenix.in" target="_blank"><b>Sofzenix IT Solution LLP</b></a></footer>
+
+    <script src="js/config.js"></script>
+    <script>
+        const API    = CONFIG.API_URL;
+        const params = new URLSearchParams(window.location.search);
+        const TOKEN  = (params.get('t') || params.get('token') || '').toUpperCase();
+
+        let rewardAmount = 0;
+        let requiresPhone = false;
+        let linkedPhone   = '';
+        let isDrawing  = false;
+        let revealed   = false;
+        let moveCount  = 0;
+
+        // ── INIT ──────────────────────────────────────────────────
+        (async () => {
+            if (!TOKEN) { return; }
+            try {
+                // Try to get auth token if exists
+                const authToken = localStorage.getItem('auth_token');
+                const headers   = authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
+
+                const res = await fetch(API + '/api/reward/' + TOKEN, { headers });
+                const d   = await res.json();
+                if (!d.valid) {
+                    document.getElementById('loading-screen').innerHTML =
+                        '<div class="card" style="text-align:center;padding:40px;">❌<br><br><b>' +
+                        (d.error || 'Invalid card') + '</b></div>';
+                    return;
+                }
+                rewardAmount  = d.reward_amount;
+                requiresPhone = d.requires_phone_verification || false;
+                linkedPhone   = d.phone_number || '';
+
+                // If user is already logged in AND their phone matches the linked phone, 
+                // we can skip the "Verify Your Identity" step entirely.
+                if (d.is_logged_in && d.user_phone && linkedPhone) {
+                    const clean = (p) => String(p || '').replace(/\D/g, '').slice(-10);
+                    if (clean(d.user_phone) === clean(linkedPhone)) {
+                        requiresPhone = false; // Bypass step 1
+                    }
+                }
+
+                // Show screen
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('scratch-screen').classList.remove('hidden');
+                document.getElementById('token-display').textContent  = TOKEN;
+                // Pre-populate amount so it shows AS the card is scratched
+                document.getElementById('reward-value').textContent   = rewardAmount;
+                document.getElementById('claim-amount').textContent   = '₹' + rewardAmount;
+
+                initCanvas();
+            } catch(e) {
+                console.error(e);
+                document.getElementById('loading-screen').innerHTML =
+                    '<div class="card" style="text-align:center;padding:40px;">⚠️<br><br>Connection error. Please try again.</div>';
+            }
+        })();
+
+        // ── CANVAS ────────────────────────────────────────────────
+        function initCanvas() {
+            const canvas  = document.getElementById('scratch-canvas');
+            const box     = document.getElementById('reward-box');
+            
+            const setSize = () => {
+                canvas.width  = box.offsetWidth || 350; // Fallback to 350 if closed
+                canvas.height = box.offsetHeight || 200;
+                
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                // IMPORTANT: Reset to normal drawing mode before filling!
+                ctx.globalCompositeOperation = 'source-over';
+                
+                // Draw vibrant purple gradient cover
+                const g = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                g.addColorStop(0,   '#4A3B8C');
+                g.addColorStop(0.5, '#6B4FBF');
+                g.addColorStop(1,   '#3D2D7A');
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Overlay text
+                ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                ctx.font = 'bold 18px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('✨ Scratch Here ✨', canvas.width / 2, canvas.height / 2 - 5);
+                ctx.font = '13px Inter, sans-serif';
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                ctx.fillText('Reveal your reward', canvas.width / 2, canvas.height / 2 + 18);
+
+                // Set to erase mode for the user
+                ctx.globalCompositeOperation = 'destination-out';
+                return ctx;
+            }
+
+            let ctx = setSize();
+            // Re-draw after a moment to ensure it shows up
+            setTimeout(() => { ctx = setSize(); }, 300);
+
+            // ── Event helpers ──
+            const getPos = (e) => {
+                const r = canvas.getBoundingClientRect();
+                const s = e.touches ? e.touches[0] : e;
+                return { x: s.clientX - r.left, y: s.clientY - r.top };
+            };
+
+            const draw = (e) => {
+                if (!isDrawing) return;
+                e.preventDefault();
+                const { x, y } = getPos(e);
+                ctx.beginPath();
+                ctx.arc(x, y, 40, 0, Math.PI * 2); 
+                ctx.fill();
+
+                moveCount++;
+                if (moveCount % 3 === 0) checkReveal(ctx, canvas);
+            };
+
+            canvas.addEventListener('mousedown',  (e) => { isDrawing = true; draw(e); });
+            canvas.addEventListener('mousemove',  draw);
+            canvas.addEventListener('mouseup',    () => { isDrawing = false; checkReveal(ctx, canvas, true); });
+            canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); isDrawing = true; draw(e); }, { passive: false });
+            canvas.addEventListener('touchmove',  draw, { passive: false });
+            canvas.addEventListener('touchend',   () => { isDrawing = false; checkReveal(ctx, canvas, true); });
+        }
+
+        // ── CHECK REVEAL ──────────────────────────────────────────
+        function checkReveal(ctx, canvas, isFinal = false) {
+            if (revealed) return;
+            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let cleared = 0;
+            for (let i = 3; i < data.length; i += 4) if (data[i] === 0) cleared++;
+            const pct = (cleared / (canvas.width * canvas.height)) * 100;
+
+            document.getElementById('progress-bar').style.width = Math.min(pct, 100).toFixed(1) + '%';
+
+            // Very low threshold for safety (10% or final click)
+            if (pct >= 15 || (isFinal && pct >= 8)) {
+                forceReveal();
+            }
+        }
+
+        function forceReveal() {
+            if (revealed) return;
+            revealed = true;
+            
+            const canvas = document.getElementById('scratch-canvas');
+            const ctx    = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            canvas.style.pointerEvents = 'none';
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('scratch-hint').style.display = 'none';
+            document.getElementById('reward-confetti').style.display = 'block';
+
+            if (requiresPhone) {
+                showSection('section-phone');
+            } else {
+                showSection('section-claim');
+            }
+            launchConfetti();
+        }
+
+        function showSection(id) {
+            document.getElementById(id).classList.add('visible');
+            // Scroll to it smoothly
+            setTimeout(() => {
+                document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        // ── PHONE VERIFY ──────────────────────────────────────────
+        function verifyPhone() {
+            const val    = document.getElementById('phone-input').value.trim().replace(/\D/g, '').slice(-10);
+            const linked = linkedPhone.replace(/\D/g, '').slice(-10);
+            if (val.length < 10) { alert('Enter a valid 10-digit phone number.'); return; }
+            if (linked && val !== linked) { alert('Phone number does not match this card.'); return; }
+            document.getElementById('section-phone').classList.remove('visible');
+            showSection('section-claim');
+        }
+
+        // ── SUBMIT CLAIM ──────────────────────────────────────────
+        async function submitClaim() {
+            const upi     = document.getElementById('upi-input').value.trim();
+            const contact = document.getElementById('contact-input').value.trim();
+            const phone   = document.getElementById('phone-input')?.value?.trim() || '';
+
+            if (!upi || !upi.includes('@')) { alert('Enter a valid UPI ID (e.g. name@okaxis)'); return; }
+            if (contact.length < 10)         { alert('Enter a valid 10-digit contact number.'); return; }
+
+            const btn = document.getElementById('claim-btn');
+            btn.disabled = true; btn.textContent = '// Submitting...';
+
+            try {
+                const authToken = localStorage.getItem('auth_token');
+                const headers   = { 'Content-Type': 'application/json' };
+                if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+
+                const res = await fetch(API + '/api/reward/' + TOKEN + '/claim', {
+                    method:  'POST',
+                    headers: headers,
+                    body:    JSON.stringify({ 
+                        upi_id: upi, 
+                        contact_number: contact,
+                        phone_number: phone || contact 
+                    })
+                });
+                const d = await res.json();
+                if (d.success) {
+                    document.getElementById('scratch-screen').classList.add('hidden');
+                    document.getElementById('result-screen').classList.remove('hidden');
+                    document.getElementById('result-amount').textContent = 'Reward: ₹' + d.amount;
+                    document.getElementById('result-token').textContent  = 'Token: ' + TOKEN;
+                    launchConfetti();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    alert(d.error || 'Submission failed. Please try again.');
+                    btn.disabled = false; btn.textContent = '👑 Submit for Verification';
+                }
+            } catch(e) {
+                alert('Network error. Please try again.');
+                btn.disabled = false; btn.textContent = '👑 Submit for Verification';
+            }
+        }
+
+        // ── CONFETTI ──────────────────────────────────────────────
+        function launchConfetti() {
+            const colors = ['#A855F7','#F59E0B','#10B981','#3B82F6','#EF4444','#FCD34D'];
+            for (let i = 0; i < 70; i++) {
+                const p = document.createElement('div');
+                p.className = 'confetti-particle';
+                p.style.cssText = `left:${Math.random()*100}vw;top:-10px;
+                    background:${colors[Math.floor(Math.random()*colors.length)]};
+                    width:${Math.random()*8+5}px; height:${Math.random()*8+5}px;
+                    border-radius:${Math.random()>.5?'50%':'2px'};
+                    animation-duration:${Math.random()*2+1.5}s;
+                    animation-delay:${Math.random()*0.5}s;`;
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 3500);
+            }
+        }
+    </script>
+</body>
+</html>

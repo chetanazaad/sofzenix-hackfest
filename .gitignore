@@ -1,0 +1,30 @@
+# ── Sofzenix HackFest ─────────────────────────────────────────────────────────
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Environment
+.env
+*.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Uploads
+backend/uploads/
+
+# Database  
+*.db
+*.sqlite3

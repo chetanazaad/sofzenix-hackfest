@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Sofzenix HackFest 2026</title>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body { display:flex; flex-direction:column; min-height:100vh; }
+    /* Tab nav */
+    .admin-header {
+      background: var(--bg-surface); border-bottom: 1px solid var(--bg-border);
+      padding: 0 16px; display:flex; align-items:center; gap:0; overflow-x:auto;
+      scrollbar-width: thin;
+    }
+    .admin-header h1 { font-size:.9rem; color:var(--neon-cyan); white-space:nowrap;
+                        padding:16px 24px 16px 0; border-right:1px solid var(--bg-border);
+                        margin-right:16px; font-family:var(--font-mono); }
+    .tab-btn {
+      padding:16px 20px; background:none; border:none; border-bottom:2px solid transparent;
+      color:var(--text-muted); font-family:var(--font-mono); font-size:12px;
+      cursor:pointer; white-space:nowrap; text-transform:uppercase; letter-spacing:.08em;
+      transition:all var(--transition);
+    }
+    .tab-btn:hover { color:var(--text-primary); }
+    .tab-btn.active { color:var(--neon-cyan); border-bottom-color:var(--neon-cyan); }
+    .tab-section { display:none; padding:32px; max-width:1200px; margin: 40px auto; }
+    .tab-section.active { display:block; }
+    #admin-wrapper { padding-top: 80px; flex: 1; }
+    /* Toolbar */
+    .toolbar { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:24px; }
+    .toolbar input, .toolbar select {
+      padding:9px 14px; min-width:180px; max-width:280px;
+      background:var(--bg-surface); border:1px solid var(--bg-border);
+      border-radius:var(--radius); color:var(--text-primary); font-size:13px;
+    }
+    /* Table */
+    .admin-table-wrap { background:var(--bg-card); border:1px solid var(--bg-border);
+                         border-radius:var(--radius-lg); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .admin-table-wrap table { min-width:800px; }
+    thead th { background:var(--bg-surface); }
+    .action-btns { display:flex; gap:6px; flex-wrap:wrap; }
+    /* Reward form */
+    .gen-form { background:var(--bg-card); border:1px solid var(--bg-border);
+                 border-radius:var(--radius-lg); padding:28px; max-width:600px; }
+    .gen-form .form-grid { display:flex; flex-direction:column; gap:14px; }
+    /* Stats */
+    .reward-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+                     gap:16px; margin-bottom:28px; }
+    /* Settings */
+    .settings-form { max-width:560px; display:flex; flex-direction:column; gap:14px; }
+    .settings-form label { font-family:var(--font-mono); font-size:11px; color:var(--text-muted);
+                            text-transform:uppercase; letter-spacing:.1em; margin-bottom:4px; }
+    .switch-row { display:flex; align-items:center; gap:12px; }
+    .switch { position:relative; display:inline-block; width:52px; height:28px; }
+    .switch input { opacity:0; width:0; height:0; }
+    .slider { position:absolute; inset:0; background:var(--bg-border);
+               border-radius:28px; cursor:pointer; transition:.3s; }
+    .slider:before { content:''; position:absolute; width:20px; height:20px; left:4px; bottom:4px;
+                      background:#fff; border-radius:50%; transition:.3s; }
+    input:checked + .slider { background:var(--neon-cyan); }
+    input:checked + .slider:before { transform:translateX(24px); }
+    /* Pagination */
+    .pagination { display:flex; gap:8px; align-items:center; margin-top:16px; flex-wrap:wrap; }
+    .page-btn { padding:6px 12px; background:none; border:1px solid var(--bg-border);
+                 color:var(--text-sub); border-radius:var(--radius); cursor:pointer;
+                 font-family:var(--font-mono); font-size:12px; transition:all var(--transition); }
+    .page-btn:hover, .page-btn.active { border-color:var(--neon-cyan); color:var(--neon-cyan); }
+    .page-info { color:var(--text-muted); font-size:12px; font-family:var(--font-mono); }
+    /* Dispatch */
+    #dispatchList { max-height:300px; overflow-y:auto; border:1px solid var(--bg-border);
+                     border-radius:var(--radius); margin-bottom:14px; }
+    .dispatch-row { display:flex; align-items:center; gap:12px; padding:10px 14px;
+                     border-bottom:1px solid var(--bg-border); font-size:13px; }
+    .dispatch-row:last-child { border-bottom:none; }
+    .dispatch-row input[type="checkbox"] { accent-color:var(--neon-cyan); width:16px; height:16px; }
+    @media(max-width:768px) {
+      .action-btns { justify-content:flex-start; }
+      .admin-header {
+        position: fixed; top: 60px; left: -100%; width: 280px; height: calc(100vh - 60px);
+        flex-direction: column; background: var(--bg-surface); z-index: 1100;
+        transition: left 0.3s ease; border-right: 1px solid var(--bg-border);
+        box-shadow: 20px 0 50px rgba(0,0,0,0.5); border-bottom: none;
+      }
+      .admin-header.open { left: 0; }
+      .admin-header .side-brand { display: block !important; }
+      .admin-header .tab-btn { width: 100%; border-bottom: none; border-left: 2px solid transparent; text-align: left; }
+      .admin-header .tab-btn.active { border-left-color: var(--neon-cyan); background: rgba(0,245,255,0.05); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Nav -->
+  <nav class="navbar scrolled">
+    <span class="nav-logo">⚡ HackFest <span>Admin</span></span>
+    <div class="nav-links">
+      <span style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);" id="adminUser"></span>
+      <button class="btn btn-sm btn-danger poly-btn" onclick="logout()">Logout</button>
+    </div>
+    <button class="hamburger" onclick="document.querySelector('.admin-header').classList.toggle('open')">☰</button>
+  </nav>
+
+  <div id="admin-wrapper">
+    <!-- Tab Header (Sidebar on desktop, Modal on mobile) -->
+    <div class="admin-header" id="adminHeader">
+    <div class="side-brand" style="display:none; padding:20px 24px;">// ADMIN MENU</div>
+    <button class="tab-btn active" onclick="switchTab('participants', this)">Participants</button>
+    <button class="tab-btn" onclick="switchTab('evaluation', this)">Evaluation</button>
+    <button class="tab-btn" onclick="switchTab('rewards', this)">⚡ Rewards</button>
+    <button class="tab-btn" onclick="switchTab('generate', this)">Generate Links</button>
+    <button class="tab-btn" onclick="switchTab('dispatch', this)">Dispatch</button>
+    <button class="tab-btn" onclick="switchTab('payments', this)">💸 Payment Logs</button>
+    <button class="tab-btn" onclick="switchTab('settings', this)">Settings</button>
+    <button class="tab-btn" onclick="switchTab('cleanup', this)">🗑️ Cleanup</button>
+    <button class="tab-btn" onclick="switchTab('account', this)">🔐 Account</button>
+  </div>
+
+  <!-- ── PARTICIPANTS ─────────────────────────────────────────── -->
+  <div class="tab-section active" id="tab-participants">
+    <div class="section-head">
+      <h2>// All Participants</h2>
+      <p>View, verify, and manage hackathon registrations</p>
+    </div>
+    <div class="toolbar">
+      <input type="text" id="partSearch" placeholder="🔍 Search name, email, college..."
+             oninput="searchParticipants()" style="flex:1; min-width:200px; max-width:400px;">
+      <span class="page-info" id="partCount"></span>
+    </div>
+    <div class="admin-table-wrap table-wrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>College</th><th>Branch/Year</th>
+          <th>Type</th><th>Ref Code</th><th>Payer Name</th><th>Txn ID</th><th>Pay Date</th><th>Status</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="partBody"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="partPagination"></div>
+  </div>
+
+  <!-- Screenshot Modal -->
+  <div id="ssModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:var(--bg-card); border:1px solid var(--neon-cyan); border-radius:var(--radius-lg); padding:24px; max-width:90vw; max-height:90vh; overflow:auto; position:relative;">
+      <button onclick="document.getElementById('ssModal').style.display='none'" style="position:absolute; top:12px; right:12px; background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">✕</button>
+      <div style="font-family:var(--font-mono); font-size:12px; color:var(--neon-cyan); margin-bottom:12px;">// Payment Screenshot</div>
+      <img id="ssImg" src="" alt="Payment Screenshot" style="max-width:100%; max-height:70vh; border-radius:var(--radius); display:block;">
+      <p id="ssError" style="color:var(--text-muted); display:none;">No screenshot uploaded.</p>
+    </div>
+  </div>
+
+  <!-- ── EVALUATION RESULTS ───────────────────────────────────────── -->
+  <div class="tab-section" id="tab-evaluation">
+    <div class="section-head">
+      <h2>// Evaluation Leaderboard</h2>
+      <p>Real-time scores from the judging panel</p>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-sm" onclick="loadParticipants()">↻ Refresh Scores</button>
+      <button class="btn btn-sm btn-solid">Export CSV Rankings</button>
+    </div>
+    <div class="admin-table-wrap table-wrap">
+      <table>
+        <thead><tr><th>Rank</th><th>Team Name</th><th>Innovation</th><th>Design</th><th>Final Score</th><th>Phase</th></tr></thead>
+        <tbody id="evalBody">
+           <tr><td class="mono">#1</td><td><strong>CyberSentinels</strong></td><td>48/50</td><td>45/50</td><td class="mono" style="color:var(--neon-cyan)">93.0</td><td>Finale</td></tr>
+           <tr><td class="mono">#2</td><td><strong>ByteBusters</strong></td><td>42/50</td><td>40/50</td><td class="mono" style="color:var(--neon-cyan)">82.0</td><td>Finale</td></tr>
+           <tr><td class="mono">#3</td><td><strong>GreenWarriors</strong></td><td>38/50</td><td>42/50</td><td class="mono" style="color:var(--neon-cyan)">80.0</td><td>Prelims</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── REWARDS DASHBOARD ────────────────────────────────────── -->
+  <div class="tab-section" id="tab-rewards">
+    <div class="section-head">
+      <h2>// Reward Dashboard</h2>
+      <p>ScratchPay stats and campaign overview — click any card to filter</p>
+    </div>
+    <div class="toolbar">
+      <select id="campaignFilter" onchange="loadRewardStats(); loadScratchLinks()">
+        <option value="all">All Campaigns</option>
+      </select>
+      <button class="btn btn-sm" onclick="loadRewardStats(); loadScratchLinks()">↻ Refresh</button>
+    </div>
+    <div class="reward-stats" id="rewardStats"></div>
+
+    <div class="section-head" style="margin-top:32px;">
+      <h2 style="font-size:1.1rem;">// All Scratch Cards</h2>
+    </div>
+    <div class="toolbar">
+      <select id="linkStatus" onchange="loadScratchLinks()">
+        <option value="all">All Status</option>
+        <option value="unused">Unused</option>
+        <option value="used">Used</option>
+      </select>
+    </div>
+    <div class="admin-table-wrap table-wrap">
+      <table>
+        <thead><tr>
+          <th>Token</th>
+          <th>Linked Phone</th>
+          <th>Contact Num</th>
+          <th>Reward</th>
+          <th>Status</th>
+          <th>Payment</th>
+          <th>UPI ID</th>
+          <th>Created</th>
+          <th>Action</th>
+        </tr></thead>
+        <tbody id="linksBody"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="linksPagination"></div>
+  </div>
+
+  <!-- ── GENERATE LINKS ───────────────────────────────────────── -->
+  <div class="tab-section" id="tab-generate">
+    <div class="section-head">
+      <h2>// Generate Scratch Cards</h2>
+      <p>Create unique reward scratch card links by count or bulk upload</p>
+    </div>
+    <div class="gen-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Campaign Name</label>
+          <input type="text" id="genCampaign" placeholder="e.g. HackFest-Referral-April26">
+        </div>
+        <div class="input-row">
+          <div class="form-group">
+            <label>Min Reward (₹)</label>
+            <input type="number" id="genMin" value="50" min="1">
+          </div>
+          <div class="form-group">
+            <label>Max Reward (₹)</label>
+            <input type="number" id="genMax" value="350">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Number of Links (if no phone list)</label>
+          <input type="number" id="genCount" value="1" min="1" max="500">
+        </div>
+
+        <div style="border-top:1px solid var(--bg-border); padding-top:14px;">
+          <label style="display:block; margin-bottom:8px; font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--neon-cyan);">
+            Or Upload Phone Numbers (CSV / XLSX)
+          </label>
+          <div class="drop-zone" id="genDropZone" onclick="document.getElementById('phoneFile').click()">
+            📁 Click to upload Excel or CSV with phone numbers
+          </div>
+          <input type="file" id="phoneFile" accept=".csv,.xlsx,.xls"
+                 style="display:none;" onchange="uploadPhones(event)">
+          <div id="phonesPreview" style="margin-top:8px; font-family:var(--font-mono); font-size:12px; color:var(--text-muted);"></div>
+        </div>
+
+        <button class="btn btn-solid w-full" onclick="generateLinks()">// Generate Scratch Cards</button>
+        <div id="genResult" style="font-family:var(--font-mono); font-size:13px; display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DISPATCH ─────────────────────────────────────────────── -->
+  <div class="tab-section" id="tab-dispatch">
+    <div class="section-head">
+      <h2>// Dispatch Reward Cards to Participants</h2>
+      <p>Select verified participants and generate scratch cards for them in one click</p>
+    </div>
+    <div class="gen-form" style="max-width:700px;">
+      <div class="form-grid">
+        <div class="input-row">
+          <div class="form-group">
+            <label>Campaign Name</label>
+            <input type="text" id="dispCampaign" placeholder="e.g. Winner-Prizes">
+          </div>
+          <div class="form-group">
+            <label>Reward Amount (₹ fixed)</label>
+            <input type="number" id="dispAmount" placeholder="e.g. 150" min="1">
+          </div>
+        </div>
+        <label style="font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-muted);">Select Participants</label>
+        <div id="dispatchList"></div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-sm" onclick="selectAllDispatch(true)">Select All</button>
+          <button class="btn btn-sm" onclick="selectAllDispatch(false)">Deselect All</button>
+        </div>
+        <button class="btn btn-solid" onclick="dispatchCards()">// Dispatch Scratch Cards</button>
+        <div id="dispResult" style="font-family:var(--font-mono); font-size:13px;"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── SETTINGS ─────────────────────────────────────────────── -->
+  <div class="tab-section" id="tab-settings">
+    <div class="section-head">
+      <h2>// Reward Settings</h2>
+      <p>Configure reward amounts and payment gateway</p>
+    </div>
+    <form class="settings-form" onsubmit="saveSettings(event)">
+      <div class="input-row">
+        <div class="form-group">
+          <label>Min Reward Amount (₹)</label>
+          <input type="number" id="sMin" min="1" placeholder="50">
+        </div>
+        <div class="form-group">
+          <label>Max Reward Amount (₹)</label>
+          <input type="number" id="sMax" placeholder="350">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Hackathon Mode</label>
+        <select id="sGateway">
+          <option value="open">Open Registration</option>
+          <option value="closed">Closed</option>
+        </select>
+      </div>
+      <div class="switch-row">
+        <label class="switch">
+          <input type="checkbox" id="sDevMode" checked>
+          <span class="slider"></span>
+        </label>
+        <div>
+          <div style="font-size:14px; color:var(--text-primary);">Dev Mode (Mock Payments)</div>
+          <div style="font-size:12px; color:var(--text-muted);">When ON, no real money is transferred</div>
+        </div>
+      </div>
+
+
+      <button type="submit" class="btn btn-solid">// Save Settings</button>
+    </form>
+  </div>
+
+  <!-- ── PAYMENT LOGS ──────────────────────────────────────────── -->
+  <div class="tab-section" id="tab-payments">
+    <div class="section-head">
+      <h2>// Payment Logs</h2>
+      <p>Full audit trail — approve pending verifications or retry failed payouts</p>
+    </div>
+    <div class="toolbar">
+      <select id="payStatus" onchange="loadPayments()">
+        <option value="all">All</option>
+        <option value="pending_verification">⏳ Pending Verify</option>
+        <option value="success">✅ Success</option>
+        <option value="failed">❌ Failed</option>
+      </select>
+      <button class="btn btn-sm" onclick="loadPayments()">↻ Refresh</button>
+    </div>
+    <div class="admin-table-wrap table-wrap">
+      <table>
+        <thead><tr>
+          <th>Token</th><th>UPI ID</th><th>Contact</th><th>Amount</th><th>Status</th><th>Timestamp</th><th>Action</th>
+        </tr></thead>
+        <tbody id="paymentsBody"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="payPagination"></div>
+  </div>
+
+  <!-- ── CLEANUP ────────────────────────────────────────────────── -->
+  <div class="tab-section" id="tab-cleanup">
+    <div class="section-head">
+      <h2>// Cleanup Data</h2>
+      <p>Permanently delete campaigns or wipe all scratch card data</p>
+    </div>
+    <div class="gen-form" style="margin-bottom:24px;">
+      <div class="form-grid">
+        <div class="section-label">// Delete Single Campaign</div>
+        <p style="font-size:13px; color:var(--text-muted); line-height:1.6;">Select a campaign to permanently delete all its scratch links and payment records.</p>
+        <div class="form-group">
+          <label>Choose Campaign</label>
+          <select id="cleanupCampaign">
+            <option value="">Choose a campaign...</option>
+          </select>
+        </div>
+        <button class="btn btn-danger w-full" onclick="deleteCampaign()">🗑️ Delete Selected Campaign</button>
+      </div>
+    </div>
+    <div class="gen-form" style="border:1px solid rgba(239,68,68,0.3);">
+      <div class="form-grid">
+        <div class="section-label" style="color:var(--danger);">// ☢️ Danger Zone — Global Wipe</div>
+        <p style="font-size:13px; color:var(--text-muted); line-height:1.6;">This will permanently delete <b>EVERY</b> scratch link and payment log in the database. <b>This cannot be undone.</b></p>
+        <button class="btn btn-danger w-full" onclick="wipeDatabase()">☢️ WIPE ALL SCRATCH DATA</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ACCOUNT ────────────────────────────────────────────────── -->
+  <div class="tab-section" id="tab-account">
+    <div class="section-head">
+      <h2>// Account Settings</h2>
+      <p>Change your admin username and password. Current password is always required.</p>
+    </div>
+    <div class="gen-form" style="max-width:480px;">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Current Password *</label>
+          <input type="password" id="accCurrPw" placeholder="Your current password">
+        </div>
+        <hr style="border:none; border-top:1px solid var(--bg-border);">
+        <div class="form-group">
+          <label>New Username <span style="color:var(--text-muted); font-size:11px;">(leave blank to keep)</span></label>
+          <input type="text" id="accNewUser" placeholder="e.g. superadmin" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>New Password <span style="color:var(--text-muted); font-size:11px;">(leave blank to keep)</span></label>
+          <input type="password" id="accNewPw" placeholder="Min 6 characters">
+        </div>
+        <div class="form-group">
+          <label>Confirm New Password</label>
+          <input type="password" id="accConfirmPw" placeholder="Repeat new password">
+        </div>
+        <button class="btn btn-solid w-full" onclick="changeCredentials()">🔐 Update Credentials</button>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <footer class="site-footer">Copyright &copy; 2026 <b>Sofzenix IT Solution LLP</b></footer>
+  <div id="toast"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const API = CONFIG.API_URL;
+    let partPage = 1, linksPage = 1, payPage = 1;
+    let uploadedPhones = [];
+    let allParticipants = [];
+
+    // ── Auth Guard ──────────────────────────────────────────────
+    (async () => {
+      const res = await fetch(API + '/api/admin/check-auth', { credentials: 'include' });
+      const d = await res.json();
+      if (!d.logged_in) { window.location.href = 'login.html'; return; }
+      document.getElementById('adminUser').textContent = '// Logged in as admin';
+      loadParticipants();
+      loadCampaigns();
+      loadSettings();
+    })();
+
+    async function logout() {
+      await fetch(API + '/api/admin/logout', { method: 'POST', credentials: 'include' });
+      window.location.href = 'login.html';
+    }
+
+    // ── Tabs ────────────────────────────────────────────────────
+    function switchTab(tab, el) {
+      document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      el.classList.add('active');
+      // Close mobile sidebar if open
+      document.getElementById('adminHeader').classList.remove('open');
+      if (tab === 'rewards') { loadRewardStats(); loadScratchLinks(); }
+      if (tab === 'payments') loadPayments();
+      if (tab === 'dispatch') loadDispatch();
+      if (tab === 'cleanup') loadCleanupCampaigns();
+    }
+
+    // ── Participants ────────────────────────────────────────────
+    let searchTimeout;
+    function searchParticipants() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => { partPage = 1; loadParticipants(); }, 350);
+    }
+
+    async function loadParticipants(page = partPage) {
+      partPage = page;
+      const search = document.getElementById('partSearch').value.trim();
+      const res = await fetch(API + `/api/admin/participants?page=${page}&per_page=25&search=${encodeURIComponent(search)}`, { credentials: 'include' });
+      const data = await res.json();
+      allParticipants = data.participants || [];
+      document.getElementById('partCount').textContent = `Total: ${data.total ?? 0}`;
+      const body = document.getElementById('partBody');
+      body.innerHTML = allParticipants.map((u, i) => `
+        <tr>
+          <td class="mono" style="color:var(--text-muted)">${(page-1)*25+i+1}</td>
+          <td><strong>${u.name}</strong></td>
+          <td style="font-size:12px;">${u.email}</td>
+          <td>${u.phone || '-'}</td>
+          <td style="font-size:12px;">${u.college || '-'}</td>
+          <td style="font-size:12px;">${u.branch || '-'} / ${u.year_of_study || '-'}</td>
+          <td><span class="badge ${u.participation_type === 'TEAM' ? 'badge-active' : 'badge-pending'}">${u.participation_type}</span></td>
+          <td class="mono" style="font-size:11px; color:var(--neon-cyan)">${u.referral_code || '-'}</td>
+          <td style="font-size:12px; color:var(--text-sub);">${u.payer_name || '-'}</td>
+          <td class="mono" style="font-size:11px;">${u.payment_reference || '-'}</td>
+          <td style="font-size:11px; color:var(--text-muted);">${u.payment_date || '-'}</td>
+          <td>${u.is_verified
+            ? '<span class="badge badge-verified">✓ Verified</span>'
+            : '<span class="badge badge-pending">Pending</span>'}</td>
+          <td class="action-btns">
+            <button class="btn btn-sm" onclick="viewScreenshot(${u.id})">🖼 Proof</button>
+            ${!u.is_verified ? `<button class="btn btn-sm btn-solid" onclick="verifyUser(${u.id})">✓ Verify</button>` : ''}
+            <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id}, '${u.name}')">✕</button>
+          </td>
+        </tr>`).join('') || '<tr><td colspan="13" style="text-align:center; color:var(--text-muted); padding:32px;">No participants found</td></tr>';
+      renderPagination('partPagination', data.pages, page, (p) => loadParticipants(p));
+    }
+
+    async function verifyUser(id) {
+      const res = await fetch(API + `/api/admin/participants/${id}/verify`, { method:'POST', credentials:'include' });
+      const d = await res.json();
+      showToast(d.message || 'Verified', d.success ? 'success' : 'error');
+      if (d.success) loadParticipants();
+    }
+
+    async function deleteUser(id, name) {
+      if (!confirm(`Delete ${name}? This cannot be undone.`)) return;
+      const res = await fetch(API + `/api/admin/participants/${id}`, { method:'DELETE', credentials:'include' });
+      const d = await res.json();
+      showToast(d.success ? 'Participant deleted' : (d.error || 'Error'), d.success ? 'success' : 'error');
+      if (d.success) loadParticipants();
+    }
+
+    // ── Reward Stats ────────────────────────────────────────────
+    async function loadRewardStats() {
+      const campaign = document.getElementById('campaignFilter').value;
+      const res = await fetch(API + `/api/admin/reward-stats?campaign_id=${encodeURIComponent(campaign)}`, { credentials:'include' });
+      const d = await res.json();
+      const s = d.reward_settings || {};
+      document.getElementById('rewardStats').innerHTML = `
+        <div class="stat-card" style="cursor:pointer;" onclick="document.getElementById('linkStatus').value='all'; loadScratchLinks();" title="View all cards">
+          <div class="stat-number">${d.total_links}</div><div class="stat-label">Total Cards → View All</div>
+        </div>
+        <div class="stat-card" style="cursor:pointer; --stat-color:#10B981" onclick="document.getElementById('linkStatus').value='used'; loadScratchLinks();" title="View redeemed">
+          <div class="stat-number" style="color:var(--success)">${d.used_links}</div><div class="stat-label">Redeemed → View Used</div>
+        </div>
+        <div class="stat-card" style="cursor:pointer; --stat-color:#F59E0B" onclick="document.getElementById('linkStatus').value='unused'; loadScratchLinks();" title="View pending">
+          <div class="stat-number" style="color:var(--warning)">${d.unused_links}</div><div class="stat-label">Pending → View Unused</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">₹${d.total_disbursed.toLocaleString('en-IN')}</div><div class="stat-label">Total Disbursed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" style="color:${s.dev_mode ? 'var(--warning)' : 'var(--success)'}">${s.dev_mode ? 'DEV' : 'LIVE'}</div>
+          <div class="stat-label">Payment Mode</div>
+        </div>`;
+    }
+
+    async function loadCampaigns() {
+      const res = await fetch(API + '/api/admin/campaigns', { credentials:'include' });
+      const d = await res.json();
+      const sel = document.getElementById('campaignFilter');
+      (d.campaigns || []).forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c; opt.textContent = c; sel.appendChild(opt);
+      });
+    }
+
+    async function loadScratchLinks(page = linksPage) {
+      linksPage = page;
+      const campaign = document.getElementById('campaignFilter').value;
+      const status   = document.getElementById('linkStatus').value;
+      const res = await fetch(API + `/api/admin/links?page=${page}&per_page=25&status=${status}&campaign_id=${encodeURIComponent(campaign)}`, { credentials:'include' });
+      const d = await res.json();
+      document.getElementById('linksBody').innerHTML = (d.links || []).map(l => {
+        // Payment badge style
+        let payBadge;
+        if (l.payment_status === 'pending_verification') {
+          payBadge = `<span class="badge" style="background:rgba(255,184,0,0.12); color:#FFB800; border:1px solid rgba(255,184,0,0.3); font-size:11px;">🔔 Pending Verify</span>`;
+        } else if (l.payment_status === 'success') {
+          payBadge = `<span class="badge badge-verified" style="font-size:11px;">✅ Sent</span>`;
+        } else {
+          payBadge = `<span class="badge" style="background:rgba(255,255,255,0.05); color:var(--text-muted); font-size:11px;">Pending</span>`;
+        }
+        // Action button
+        let action = '—';
+        if (l.payment_status === 'pending_verification') {
+          action = `<button class="btn btn-sm btn-solid" style="background:var(--neon-cyan); color:#000; font-weight:700;" onclick="approveReward('${l.token}', this)">✅ Approve</button>`;
+        } else if (l.payment_status === 'failed') {
+          action = `<button class="btn btn-sm" onclick="approveReward('${l.token}', this)">↻ Retry</button>`;
+        }
+        return `
+        <tr>
+          <td class="mono" style="color:var(--neon-cyan);font-size:11px;">${l.token}</td>
+          <td style="font-size:12px;">${l.phone_number || '—'}</td>
+          <td style="font-size:12px; color:var(--neon-cyan);">${l.submitted_phone || '—'}</td>
+          <td class="mono" style="color:#FFB800; font-weight:700;">₹${l.reward_amount}</td>
+          <td>${l.is_used
+            ? `<span class="badge badge-used" style="font-size:11px;">Used</span>`
+            : `<span class="badge badge-active" style="font-size:11px;">Unused</span>`}</td>
+          <td>${payBadge}</td>
+          <td style="font-size:12px;">${l.recipient_upi || '—'}</td>
+          <td style="font-size:11px; color:var(--text-muted);">${l.created_at ? l.created_at.slice(0,10) : '—'}</td>
+          <td>${action}</td>
+        </tr>`;
+      }).join('') || '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:32px;">No cards found</td></tr>';
+      renderPagination('linksPagination', d.pages, page, (p) => loadScratchLinks(p));
+    }
+
+    // ── Generate Links ──────────────────────────────────────────
+    async function uploadPhones(e) {
+      const file = e.target.files[0]; if (!file) return;
+      const form = new FormData(); form.append('file', file);
+      const res = await fetch(API + '/api/admin/upload-phones', { method:'POST', body:form, credentials:'include' });
+      const d = await res.json();
+      if (d.success) {
+        uploadedPhones = d.phones;
+        document.getElementById('genDropZone').textContent = `✅ ${d.count} phones loaded (${d.duplicates_removed} duplicates removed)`;
+        document.getElementById('genDropZone').classList.add('has-file');
+        document.getElementById('phonesPreview').textContent = '// First 5: ' + d.phones.slice(0,5).join(', ') + (d.phones.length>5 ? '...' : '');
+      } else {
+        showToast(d.error, 'error');
+      }
+    }
+
+    async function generateLinks() {
+      const campaign = document.getElementById('genCampaign').value.trim();
+      const min_amount = parseFloat(document.getElementById('genMin').value);
+      const max_amount = parseFloat(document.getElementById('genMax').value);
+      const count = parseInt(document.getElementById('genCount').value);
+      const payload = { campaign_id: campaign, min_amount, max_amount,
+                         phone_numbers: uploadedPhones.length ? uploadedPhones : [], count };
+      const res = await fetch(API + '/api/admin/generate', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload), credentials:'include'
+      });
+      const d = await res.json();
+      const el = document.getElementById('genResult');
+      el.style.display = 'block';
+      if (d.success) {
+        el.style.color = 'var(--success)';
+        el.textContent = `✅ ${d.message}`;
+        showToast(d.message, 'success');
+        uploadedPhones = [];
+        document.getElementById('genDropZone').textContent = '📁 Click to upload Excel or CSV with phone numbers';
+        document.getElementById('genDropZone').classList.remove('has-file');
+        document.getElementById('phonesPreview').textContent = '';
+        // Auto refresh campaigns
+        loadCampaigns();
+      } else {
+        el.style.color = 'var(--danger)';
+        el.textContent = '⚠ ' + d.error;
+      }
+    }
+
+    // ── Dispatch ────────────────────────────────────────────────
+    async function loadDispatch() {
+      const res = await fetch(API + '/api/admin/participants?per_page=200&page=1', { credentials:'include' });
+      const d = await res.json();
+      document.getElementById('dispatchList').innerHTML = (d.participants || []).map(u => `
+        <div class="dispatch-row">
+          <input type="checkbox" class="dispatch-check" data-id="${u.id}" value="${u.id}">
+          <div>
+            <strong>${u.name}</strong> — ${u.email}
+            <span style="font-size:11px; color:var(--text-muted); margin-left:8px;">${u.phone || ''}</span>
+          </div>
+        </div>`).join('') || '<div style="padding:20px;text-align:center;color:var(--text-muted);">No participants</div>';
+    }
+
+    function selectAllDispatch(val) {
+      document.querySelectorAll('.dispatch-check').forEach(c => c.checked = val);
+    }
+
+    async function dispatchCards() {
+      const selected = [...document.querySelectorAll('.dispatch-check:checked')].map(c => parseInt(c.value));
+      if (!selected.length) { showToast('Select at least one participant', 'error'); return; }
+      const campaign = document.getElementById('dispCampaign').value.trim() || 'DISPATCH';
+      const amount = parseFloat(document.getElementById('dispAmount').value);
+      if (!amount || amount < 1) { showToast('Enter a valid reward amount', 'error'); return; }
+      const payload = { campaign_id: campaign, min_amount: amount, max_amount: amount,
+                         user_ids: selected, count: selected.length };
+      const res = await fetch(API + '/api/admin/generate', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload), credentials:'include'
+      });
+      const d = await res.json();
+      const el = document.getElementById('dispResult');
+      if (d.success) {
+        el.style.color = 'var(--success)';
+        el.textContent = `✅ ${d.message}`;
+        showToast(d.message, 'success');
+      } else {
+        el.style.color = 'var(--danger)';
+        el.textContent = '⚠ ' + (d.error || 'Generation failed');
+      }
+    }
+
+    async function loadPayments(page = payPage) {
+      payPage = page;
+      const status = document.getElementById('payStatus').value;
+      const res = await fetch(API + `/api/admin/payments?page=${page}&per_page=25&status=${status}`, { credentials:'include' });
+      const d = await res.json();
+      document.getElementById('paymentsBody').innerHTML = (d.logs || []).map(l => `
+        <tr>
+          <td class="mono" style="font-size:11px; color:var(--neon-cyan)">${l.token}</td>
+          <td style="font-size:12px;">${l.upi_id}</td>
+          <td style="font-size:12px;">${l.submitted_phone || '-'}</td>
+          <td class="mono">₹${l.amount}</td>
+          <td><span class="badge ${l.status === 'success' ? 'badge-verified' : l.status === 'pending_verification' ? 'badge-pending' : 'badge-used'}">${l.status}</span></td>
+          <td style="font-size:11px; color:var(--text-muted);">${l.timestamp ? l.timestamp.slice(0,16).replace('T',' ') : '-'}</td>
+          <td>${l.status !== 'success'
+            ? `<button class="btn btn-sm" onclick="approveReward('${l.token}', this)">↻ Approve/Retry</button>`
+            : '-'}</td>
+        </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:32px;">No payment logs found</td></tr>';
+      renderPagination('payPagination', d.pages, page, (p) => loadPayments(p));
+    }
+
+    async function approveReward(token, btn) {
+      btn.disabled = true; btn.textContent = '⏳';
+      const res = await fetch(API + `/api/admin/payments/${token}/retry`, { method:'POST', credentials:'include' });
+      const d = await res.json();
+      showToast(d.success ? ('✅ ' + d.message) : (d.error || 'Failed'), d.success ? 'success' : 'error');
+      btn.textContent = d.success ? '✅ Done' : '↻ Retry';
+      btn.disabled = false;
+      if (d.success) { setTimeout(() => { loadPayments(); loadScratchLinks(); }, 1500); }
+    }
+
+    async function viewScreenshot(uid) {
+      const modal = document.getElementById('ssModal');
+      const img = document.getElementById('ssImg');
+      const err = document.getElementById('ssError');
+      img.style.display = 'none'; err.style.display = 'none';
+      modal.style.display = 'flex';
+      try {
+        const res = await fetch(API + `/api/admin/participants/${uid}/screenshot`, { credentials:'include' });
+        const d = await res.json();
+        if (d.screenshot) { img.src = d.screenshot; img.style.display = 'block'; }
+        else { err.style.display = 'block'; }
+      } catch { err.style.display = 'block'; }
+    }
+
+    async function loadCleanupCampaigns() {
+      const res = await fetch(API + '/api/admin/campaigns', { credentials:'include' });
+      const d = await res.json();
+      const sel = document.getElementById('cleanupCampaign');
+      sel.innerHTML = '<option value="">Choose a campaign...</option>';
+      (d.campaigns || []).forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c; opt.textContent = c; sel.appendChild(opt);
+      });
+    }
+
+    async function deleteCampaign() {
+      const id = document.getElementById('cleanupCampaign').value;
+      if (!id) { showToast('Please select a campaign first', 'error'); return; }
+      if (!confirm(`Delete campaign "${id}" and ALL its scratch links? This is permanent.`)) return;
+      const res = await fetch(API + `/api/admin/campaigns/${encodeURIComponent(id)}`, { method:'DELETE', credentials:'include' });
+      const d = await res.json();
+      showToast(d.success ? ('✅ ' + (d.message || 'Deleted')) : (d.error || 'Failed'), d.success ? 'success' : 'error');
+      if (d.success) loadCleanupCampaigns();
+    }
+
+    async function wipeDatabase() {
+      if (!confirm('WARNING: This will permanently delete ALL scratch links and payment logs. This cannot be undone!')) return;
+      if (prompt("Type 'DELETE' to confirm:") !== 'DELETE') { showToast('Wipe cancelled.', 'error'); return; }
+      const res = await fetch(API + '/api/admin/wipe', { method:'DELETE', credentials:'include' });
+      const d = await res.json();
+      showToast(d.success ? '✅ Database cleared!' : (d.error || 'Failed'), d.success ? 'success' : 'error');
+    }
+
+    async function changeCredentials() {
+      const currPw = document.getElementById('accCurrPw').value.trim();
+      const newUser = document.getElementById('accNewUser').value.trim();
+      const newPw = document.getElementById('accNewPw').value.trim();
+      const confirmPw = document.getElementById('accConfirmPw').value.trim();
+      if (!currPw) { showToast('Current password is required', 'error'); return; }
+      if (!newUser && !newPw) { showToast('Enter a new username or password', 'error'); return; }
+      if (newPw && newPw !== confirmPw) { showToast('Passwords do not match', 'error'); return; }
+      if (newPw && newPw.length < 6) { showToast('New password must be at least 6 characters', 'error'); return; }
+      const res = await fetch(API + '/api/admin/change-credentials', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ current_password: currPw, new_username: newUser, new_password: newPw }),
+        credentials: 'include'
+      });
+      const d = await res.json();
+      showToast(d.success ? ('✅ ' + d.message) : (d.error || 'Update failed'), d.success ? 'success' : 'error');
+      if (d.success) { ['accCurrPw','accNewUser','accNewPw','accConfirmPw'].forEach(id => document.getElementById(id).value = ''); }
+    }
+
+    // ── Settings ────────────────────────────────────────────────
+    async function loadSettings() {
+      const res = await fetch(API + '/api/admin/reward-stats', { credentials:'include' });
+      const d = await res.json();
+      const s = d.reward_settings || {};
+      document.getElementById('sMin').value = s.min_amount || 50;
+      document.getElementById('sMax').value = s.max_amount || 350;
+      document.getElementById('sGateway').value = s.primary_gateway || 'razorpay';
+      document.getElementById('sDevMode').checked = s.dev_mode !== false;
+    }
+
+    async function saveSettings(e) {
+      e.preventDefault();
+      const payload = {
+        min_amount: parseFloat(document.getElementById('sMin').value),
+        max_amount: parseFloat(document.getElementById('sMax').value),
+        primary_gateway: document.getElementById('sGateway').value,
+        dev_mode: document.getElementById('sDevMode').checked,
+      };
+      const res = await fetch(API + '/api/admin/settings', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload), credentials:'include'
+      });
+      const d = await res.json();
+      showToast(d.success ? '✅ Settings saved' : (d.error || 'Error'), d.success ? 'success' : 'error');
+    }
+
+    // ── Pagination Helper ───────────────────────────────────────
+    function renderPagination(id, pages, current, cb) {
+      if (!pages || pages <= 1) { document.getElementById(id).innerHTML = ''; return; }
+      let html = '';
+      if (current > 1) html += `<button class="page-btn" onclick="(${cb})(${current-1})">← Prev</button>`;
+      for (let p = Math.max(1,current-2); p <= Math.min(pages,current+2); p++) {
+        html += `<button class="page-btn ${p===current?'active':''}" onclick="(${cb})(${p})">${p}</button>`;
+      }
+      if (current < pages) html += `<button class="page-btn" onclick="(${cb})(${current+1})">Next →</button>`;
+      html += `<span class="page-info">Page ${current} / ${pages}</span>`;
+      document.getElementById(id).innerHTML = html;
+    }
+
+    // ── Toast ───────────────────────────────────────────────────
+    function showToast(msg, type = 'info') {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.className = 'show ' + type;
+      setTimeout(() => { t.className = ''; }, 4000);
+    }
+  </script>
+</body>
+</html>

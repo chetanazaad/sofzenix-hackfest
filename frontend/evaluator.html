@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluator Portal — Sofzenix HackFest</title>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body { display:flex; height:100vh; overflow:hidden; background:#050505; }
+    
+    /* Sidebar */
+    .sidebar { width:260px; background:var(--bg-surface); border-right:1px solid var(--bg-border); display:flex; flex-direction:column; }
+    .side-brand { padding:32px 24px; font-family:var(--font-mono); font-size:1.2rem; color:var(--accent-yellow); border-bottom:1px solid var(--bg-border); }
+    .side-nav { flex:1; padding:20px 12px; }
+    .side-link { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:8px; color:var(--text-muted); text-decoration:none; font-size:14px; margin-bottom:4px; transition:all 0.3s; }
+    .side-link:hover, .side-link.active { background:rgba(255,215,0,0.08); color:var(--accent-yellow); }
+    .side-footer { padding:20px; border-top:1px solid var(--bg-border); }
+    
+    /* Main Content */
+    .main-canvas { flex:1; display:flex; flex-direction:column; overflow-y:auto; }
+    .top-bar { padding:16px 32px; background:var(--bg-surface); border-bottom:1px solid var(--bg-border); display:flex; justify-content:space-between; align-items:center; }
+    .content-pane { padding:32px; max-width:1100px; width:100%; margin:0 auto; }
+    
+    /* Tables and Cards */
+    .proj-card { background:var(--bg-card); border:1px solid var(--bg-border); 
+                 padding:28px; border-radius:12px; margin-bottom:20px; position:relative; }
+    .score-badge { position:absolute; top:20px; right:20px; background:var(--accent-yellow); color:#000; padding:4px 12px; border-radius:4px; font-weight:bold; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="side-brand">// EVALUATOR</div>
+    <nav class="side-nav">
+      <a href="#" class="side-link active" onclick="switchMod('queue', this)"><span>⚖️</span> Judging Queue</a>
+      <a href="#" class="side-link" onclick="switchMod('completed', this)"><span>✅</span> Completed Scores</a>
+      <a href="#" class="side-link" onclick="switchMod('leaderboard', this)"><span>🏆</span> Final Rankings</a>
+      <a href="#" class="side-link" onclick="switchMod('settings', this)"><span>⚙️</span> Account Settings</a>
+    </nav>
+    <div class="side-footer">
+      <button class="btn btn-sm w-full" onclick="logout()">// LOGOUT</button>
+    </div>
+  </aside>
+
+  <!-- Main Canvas -->
+  <div class="main-canvas">
+    <header class="top-bar">
+      <div id="welcomeTxt" style="font-family:var(--font-mono); color:var(--text-primary);">// WELCOME, LOADING...</div>
+      <div class="badge" style="background:rgba(255,215,0,0.1); color:var(--accent-yellow); border-color:var(--accent-yellow);">Judging Active</div>
+    </header>
+
+    <div class="content-pane">
+      
+      <!-- Queue -->
+      <div id="mod-queue" class="module-tab active">
+        <div class="section-head"><h2>Judging Queue</h2><p>Items pending your review and scoring</p></div>
+        
+        <div class="proj-card animate-fadeUp">
+          <div class="score-badge">PENDING</div>
+          <h3 style="color:var(--neon-cyan)">// AI Health Assistant</h3>
+          <p style="color:var(--text-muted); margin:12px 0;">Team: CyberSentinels | Multi-modal agents for medical triage.</p>
+          <div style="font-size:12px; color:var(--text-primary);">Tech: Python, GPT-4, React Native</div>
+          <hr style="border:0; border-top:1px solid var(--bg-border); margin:20px 0;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+            <div class="form-group"><label>Innovation (0-50)</label><input type="number" placeholder="0"></div>
+            <div class="form-group"><label>Design (0-50)</label><input type="number" placeholder="0"></div>
+          </div>
+          <button class="btn btn-solid w-full" style="background:var(--accent-yellow); color:#000; margin-top:20px;">Submit Evaluation</button>
+        </div>
+
+        <div class="proj-card animate-fadeUp" style="animation-delay:0.1s;">
+          <div class="score-badge">PENDING</div>
+          <h3 style="color:var(--neon-cyan)">// Blockchain Voting</h3>
+          <p style="color:var(--text-muted); margin:12px 0;">Team: DecentralizeMe | Transparent voting protocol.</p>
+          <div style="font-size:12px; color:var(--text-primary);">Tech: Solidity, Ethers.js, Next.js</div>
+          <hr style="border:0; border-top:1px solid var(--bg-border); margin:20px 0;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+            <div class="form-group"><label>Innovation (0-50)</label><input type="number" placeholder="0"></div>
+            <div class="form-group"><label>Design (0-50)</label><input type="number" placeholder="0"></div>
+          </div>
+          <button class="btn btn-solid w-full" style="background:var(--accent-yellow); color:#000; margin-top:20px;">Submit Evaluation</button>
+        </div>
+      </div>
+
+      <!-- Completed -->
+      <div id="mod-completed" class="module-tab" style="display:none;">
+        <div class="section-head"><h2>Completed Scores</h2><p>Your finished evaluations</p></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Team</th><th>Innovation</th><th>Design</th><th>Total</th></tr></thead>
+            <tbody>
+              <tr><td>GreenWarriors</td><td>45</td><td>42</td><td>87</td></tr>
+              <tr><td>SwiftCoders</td><td>38</td><td>40</td><td>78</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div id="mod-leaderboard" class="module-tab" style="display:none;">
+        <div class="section-head"><h2>Final Rankings</h2><p>Official leaderboard after judging</p></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Rank</th><th>Team Name</th><th>Score</th></tr></thead>
+            <tbody>
+              <tr><td>#1</td><td>CyberSentinels</td><td>93.0</td></tr>
+              <tr><td>#2</td><td>ByteBusters</td><td>82.0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div id="mod-settings" class="module-tab" style="display:none;">
+        <div class="section-head"><h2>Evaluator Settings</h2><p>Manage your judging profile</p></div>
+        <div class="card" style="max-width:600px;">
+          <form onsubmit="event.preventDefault(); showToast('Settings saved!', 'success')">
+             <div class="form-group"><label>Evaluator Name</label><input type="text" id="profName" placeholder="Loading..."></div>
+             <div class="form-group"><label>Institutional Email</label><input type="email" id="profEmail" readonly style="opacity:0.6;"></div>
+             <button class="btn btn-solid" type="submit" style="background:var(--accent-yellow); color:#000; margin-top:10px;">// Save Changes</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="js/config.js"></script>
+  <script>
+    const API = CONFIG.API_URL;
+
+    (async () => {
+      try {
+        const token = localStorage.getItem('auth_token');
+        const res = await fetch(API + '/api/auth/me', { 
+          headers: { 'Authorization': 'Bearer ' + token },
+          credentials: 'include' 
+        });
+        const d = await res.json();
+        if (!d.logged_in || d.user.role !== 'EVALUATOR') { window.location.href = 'login.html'; return; }
+        
+        document.getElementById('welcomeTxt').textContent = '// WELCOME, ' + d.user.name.toUpperCase();
+        
+        // Fill settings
+        document.getElementById('profName').value = d.user.name;
+        document.getElementById('profEmail').value = d.user.email;
+      } catch(e) { window.location.href = 'login.html'; }
+    })();
+
+    function switchMod(modId, el) {
+      document.querySelectorAll('.module-tab').forEach(m => m.style.display = 'none');
+      document.getElementById('mod-' + modId).style.display = 'block';
+      
+      document.querySelectorAll('.side-link').forEach(l => l.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    async function logout() {
+      await fetch(API + '/api/auth/logout', { method: 'POST', credentials: 'include' });
+      localStorage.removeItem('auth_token');
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

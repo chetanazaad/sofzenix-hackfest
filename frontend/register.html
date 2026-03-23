@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — Sofzenix HackFest 2026</title>
+  <meta name="description" content="Register for Sofzenix HackFest 2026 — Build, Innovate, Win.">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; background: var(--bg-primary); padding-top: 80px; }
+    .reg-page { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 40px 20px; }
+    .reg-container {
+      width: 100%; max-width: 980px;
+      display: flex; background: var(--bg-surface);
+      border: 1px solid var(--neon-cyan); border-radius: var(--radius-lg);
+      overflow: hidden; box-shadow: 0 0 40px var(--neon-glow);
+    }
+    /* Left Info Panel */
+    .reg-left {
+      width: 300px; min-width: 300px; background: var(--bg-card);
+      border-right: 1px solid var(--bg-border); padding: 40px 28px;
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .reg-left .event-title { font-family: var(--font-mono); font-size: 1.4rem; color: var(--neon-cyan); margin-bottom: 4px; }
+    .reg-left .event-tag   { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 24px; }
+    .info-block { margin-bottom: 22px; }
+    .info-block .ib-label { font-family: var(--font-mono); font-size: 10px; color: var(--neon-cyan); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 8px; }
+    .info-row { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--text-sub); margin-bottom: 5px; }
+    .info-row .icon { width: 20px; flex-shrink: 0; color: var(--neon-cyan); }
+    .prize-row { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; font-family: var(--font-mono); }
+    .reg-left .highlight {
+      margin-top: auto; background: rgba(0,245,255,0.06);
+      border: 1px solid var(--neon-cyan); border-radius: var(--radius);
+      padding: 14px 16px; font-size: 12px; color: var(--text-sub);
+    }
+    /* Right Form Panel */
+    .reg-right { flex: 1; padding: 36px 32px; overflow-y: auto; max-height: 90vh; }
+    .reg-right h2 { font-family: var(--font-mono); font-size: 1.3rem; color: var(--neon-cyan); margin-bottom: 4px; }
+    .reg-right .subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
+    .form-grid { display: flex; flex-direction: column; gap: 14px; }
+    .form-divider { border: none; border-top: 1px solid var(--bg-border); margin: 4px 0; }
+    .section-label { font-family: var(--font-mono); font-size: 10px; color: var(--neon-cyan); text-transform: uppercase; letter-spacing: 0.15em; }
+    .login-link { margin-top: 20px; text-align: center; font-size: 13px; color: var(--text-muted); }
+    .login-link a { color: var(--neon-cyan); font-weight: 600; }
+    /* Payment Box */
+    .pay-box {
+      background: var(--bg-card); border: 1px dashed var(--bg-border);
+      border-radius: var(--radius); padding: 24px 20px; text-align: center; margin-top: 4px;
+    }
+    /* Team toggle */
+    #teamBox { display: none; }
+    #teamBox.visible { display: flex; flex-direction: column; gap: 14px; }
+    /* Error Alert */
+    .alert-error {
+      background: rgba(255,68,68,0.1); border: 1px solid var(--danger);
+      border-radius: var(--radius); padding: 12px 16px; color: var(--danger);
+      font-size: 13px; font-family: var(--font-mono); display: none;
+    }
+    .alert-error.show { display: block; }
+    /* Notice banner */
+    .notice-bar {
+      background: rgba(0,245,255,0.05); border: 1px solid var(--bg-border);
+      border-left: 3px solid var(--neon-cyan); border-radius: var(--radius);
+      padding: 12px 16px; font-size: 12px; color: var(--text-sub); line-height: 1.6;
+    }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .reg-container { flex-direction: column; }
+      .reg-left { width: 100%; min-width: unset; border-right: none; border-bottom: 1px solid var(--bg-border); }
+      .reg-right { max-height: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar scrolled">
+    <a href="index.html" class="nav-logo">⚡ Sofzenix<span>HackFest</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="login.html" class="btn">Login</a>
+    </div>
+    <button class="hamburger" onclick="toggleMobileNav()">☰</button>
+  </nav>
+  <div class="overlay" id="overlay" onclick="toggleMobileNav()"></div>
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-close" onclick="toggleMobileNav()">✕</button>
+    <a href="index.html">Home</a>
+    <a href="login.html">Login</a>
+  </div>
+
+  <div class="reg-page">
+    <div class="reg-container">
+
+      <!-- LEFT — Event Info -->
+      <div class="reg-left">
+        <div class="event-title">Sofzenix HackFest</div>
+        <div class="event-tag">// National Innovation Challenge 2026</div>
+
+        <div class="info-block">
+          <div class="ib-label">// Event Details</div>
+          <div class="info-row"><span class="icon">📆</span><span><strong>Reg Period:</strong> March 23rd – April 27th</span></div>
+          <div class="info-row"><span class="icon">🚀</span><span><strong>Stage 1 (Prelims):</strong> May 6th, 2026</span></div>
+          <div class="info-row"><span class="icon">🏆</span><span><strong>Grand Finale:</strong> May 14th – 15th</span></div>
+          <div class="info-row"><span class="icon">👥</span><span><strong>Team Size:</strong> Max 4 Members</span></div>
+        </div>
+
+        <div class="info-block">
+          <div class="ib-label">// Prize Pool</div>
+          <div class="prize-row">🥇 1st — ₹15,000</div>
+          <div class="prize-row">🥈 2nd — ₹10,000</div>
+          <div class="prize-row">🥉 3rd — ₹5,000</div>
+          <div style="font-size:12px; color:var(--neon-yellow); margin-top:5px;">+ Internship with Stipend!</div>
+        </div>
+
+        <div class="info-block">
+          <div class="ib-label">// Registration Fees</div>
+          <div class="info-row"><span class="icon">👤</span><span><strong>Individual</strong> — ₹99</span></div>
+          <div class="info-row"><span class="icon">🤝</span><span><strong>Team</strong> — ₹349 (up to 4)</span></div>
+        </div>
+
+        <div class="info-block">
+          <div class="ib-label">// Payment Methods</div>
+          <div class="info-row"><span class="icon">💳</span><span>Razorpay Secure Link</span></div>
+          <div class="info-row"><span class="icon">✅</span><span>Admin verifies within 24 hrs</span></div>
+        </div>
+
+        <div class="highlight">
+          📞 Need Help? <strong>88860 88294</strong><br>
+          ⚡ WhatsApp: <strong>63053 23077</strong><br><br>
+          ✅ E-Certificate for all verified participants.
+        </div>
+      </div>
+
+      <!-- RIGHT — Registration Form -->
+      <div class="reg-right">
+        <h2>// Enroll Now</h2>
+        <p class="subtitle">Fill the form, complete payment, and wait for admin verification</p>
+
+        <div class="alert-error" id="errorAlert"></div>
+
+        <form class="form-grid" id="regForm" onsubmit="submitReg(event)">
+
+          <div class="section-label">// Personal Info</div>
+          <div class="input-row">
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input type="text" id="name" required placeholder="Your full name">
+            </div>
+            <div class="form-group">
+              <label>Phone Number *</label>
+              <input type="tel" id="phone" required placeholder="+91 XXXXX XXXXX">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email Address *</label>
+            <input type="email" id="email" required placeholder="you@example.com">
+          </div>
+
+          <hr class="form-divider">
+          <div class="section-label">// Academic Info</div>
+          <div class="form-group">
+            <label>College / University *</label>
+            <input type="text" id="college" required placeholder="Full college name">
+          </div>
+          <div class="input-row">
+            <div class="form-group">
+              <label>Branch *</label>
+              <input type="text" id="branch" required placeholder="e.g. CSE">
+            </div>
+            <div class="form-group">
+              <label>Year of Study *</label>
+              <select id="year" required>
+                <option value="">Select</option>
+                <option value="1ST">1st Year</option>
+                <option value="2ND">2nd Year</option>
+                <option value="3RD">3rd Year</option>
+                <option value="4TH">4th Year</option>
+              </select>
+            </div>
+          </div>
+
+          <hr class="form-divider">
+          <div class="section-label">// Participation Type</div>
+          <div class="form-group">
+            <label>Registration Type *</label>
+            <select id="partType" onchange="toggleTeam()" required>
+              <option value="INDIVIDUAL">Individual — ₹99</option>
+              <option value="TEAM">Team — ₹349 (up to 4 members)</option>
+            </select>
+          </div>
+          <div id="teamBox">
+            <div class="form-group">
+              <label>Team Name *</label>
+              <input type="text" id="teamName" placeholder="Your team name">
+            </div>
+          </div>
+
+          <hr class="form-divider">
+          <div class="section-label">// Referral (Optional)</div>
+          <div class="form-group">
+            <label>Referral Code</label>
+            <input type="text" id="referredBy" placeholder="Enter referral code if any" style="text-transform:uppercase;">
+          </div>
+
+          <hr class="form-divider">
+          <!-- ══════ PAYMENT SECTION ══════ -->
+          <div class="section-label">// Payment — Step 1: Pay Online</div>
+
+          <div class="pay-box" id="paymentBox">
+            <!-- Individual Payment Link -->
+            <div id="payIndividual">
+              <div style="font-size:2.2rem; margin-bottom:10px;">💳</div>
+              <div style="font-family:var(--font-mono); font-size:1.2rem; color:var(--neon-yellow); margin-bottom:6px; font-weight:700;">₹99 — Individual</div>
+              <p style="font-size:12px; color:var(--text-muted); margin-bottom:18px; line-height:1.6;">
+                Clicking the button below opens a secure <b>Razorpay Payment Window</b>.<br>Once paid, return here to enter your transaction ID.
+              </p>
+              <a href="https://rzp.io/rzp/y1zy3OW" target="_blank" onclick="markPaid()"
+                 style="display:block; padding:14px 20px; background:var(--neon-yellow); color:#000; font-family:var(--font-mono); font-weight:800; font-size:15px; border-radius:var(--radius); text-decoration:none; letter-spacing:0.05em; transition: opacity 0.2s;">
+                ⚡ PAY ₹99 NOW — INDIVIDUAL →
+              </a>
+            </div>
+            <!-- Team Payment Link -->
+            <div id="payTeam" style="display:none;">
+              <div style="font-size:2.2rem; margin-bottom:10px;">💳</div>
+              <div style="font-family:var(--font-mono); font-size:1.2rem; color:var(--neon-yellow); margin-bottom:6px; font-weight:700;">₹349 — Team (up to 4 members)</div>
+              <p style="font-size:12px; color:var(--text-muted); margin-bottom:18px; line-height:1.6;">
+                Clicking the button below opens a secure <b>Razorpay Payment Window</b>.<br>Once paid, return here to enter your transaction ID.
+              </p>
+              <a href="https://rzp.io/rzp/7eb0ZKha" target="_blank" onclick="markPaid()"
+                 style="display:block; padding:14px 20px; background:var(--neon-yellow); color:#000; font-family:var(--font-mono); font-weight:800; font-size:15px; border-radius:var(--radius); text-decoration:none; letter-spacing:0.05em; transition: opacity 0.2s;">
+                ⚡ PAY ₹349 NOW — TEAM →
+              </a>
+            </div>
+          </div>
+
+          <!-- Step 2: Transaction Details -->
+          <div class="section-label" style="margin-top:4px;">// Step 2: Enter Transaction Details</div>
+          <div class="form-group">
+            <label>Payer Name (as shown in payment app) *</label>
+            <input type="text" id="payerName" required placeholder="e.g. Chetan Sharma">
+          </div>
+          <div class="input-row">
+            <div class="form-group">
+              <label>Transaction / Reference ID *</label>
+              <input type="text" id="paymentRef" required placeholder="e.g. T2503221234567">
+            </div>
+            <div class="form-group">
+              <label>Payment Date *</label>
+              <input type="date" id="paymentDate" required>
+            </div>
+          </div>
+
+          <!-- Step 3: Screenshot Upload -->
+          <div class="section-label">// Step 3: Upload Payment Screenshot</div>
+          <div class="form-group">
+            <label>Payment Screenshot * (JPG/PNG, max 2MB)</label>
+            <div class="drop-zone" id="dropZone" onclick="document.getElementById('screenshotInput').click()">
+              📁 Click to upload your payment screenshot
+            </div>
+            <input type="file" id="screenshotInput" accept="image/jpeg,image/jpg,image/png"
+                   style="display:none;" onchange="handleFileUpload(event)">
+          </div>
+
+          <div class="notice-bar">
+            ✅ After submitting, admin will review your payment screenshot and <strong>verify your account within 24 hours</strong>. You will receive a confirmation on your registered email.
+          </div>
+
+          <!-- ══════ SECURITY ══════ -->
+          <hr class="form-divider">
+          <div class="section-label">// Security</div>
+          <div class="form-group">
+            <label>Password *</label>
+            <input type="password" id="password" required placeholder="Choose a strong password (min 6 chars)">
+          </div>
+
+          <button type="submit" class="btn btn-solid btn-lg w-full" id="submitBtn" style="margin-top:8px;">
+            // Complete Enrollment
+          </button>
+        </form>
+
+        <div class="login-link">Already registered? <a href="login.html">Login here →</a></div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    Copyright &copy; 2026 <b>Sofzenix IT Solution LLP</b>
+  </footer>
+
+  <div id="toast"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const API = CONFIG.API_URL;
+    let screenshotBase64 = '';
+
+    // Toggle payment button and team fields based on type
+    function toggleTeam() {
+      const isTeam = document.getElementById('partType').value === 'TEAM';
+      document.getElementById('teamBox').classList.toggle('visible', isTeam);
+      document.getElementById('teamName').required = isTeam;
+      // Switch payment link
+      document.getElementById('payIndividual').style.display = isTeam ? 'none' : 'block';
+      document.getElementById('payTeam').style.display = isTeam ? 'block' : 'none';
+    }
+
+    // Called when user clicks the Pay button
+    function markPaid() {
+      // Set today as default payment date for convenience
+      const today = new Date().toISOString().split('T')[0];
+      const dateField = document.getElementById('paymentDate');
+      if (!dateField.value) dateField.value = today;
+    }
+
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) {
+        showToast('File too large! Max 2MB', 'error');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        screenshotBase64 = e.target.result;
+        const zone = document.getElementById('dropZone');
+        zone.textContent = '✅ ' + file.name;
+        zone.classList.add('has-file');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function submitReg(e) {
+      e.preventDefault();
+
+      // Validate screenshot is uploaded
+      if (!screenshotBase64) {
+        showError('Please upload your payment screenshot before submitting.');
+        return;
+      }
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = '// Submitting...';
+      hideError();
+
+      const payload = {
+        name:                     document.getElementById('name').value.trim(),
+        email:                    document.getElementById('email').value.trim().toLowerCase(),
+        phone:                    document.getElementById('phone').value.trim(),
+        college:                  document.getElementById('college').value.trim(),
+        branch:                   document.getElementById('branch').value.trim(),
+        year_of_study:            document.getElementById('year').value,
+        password:                 document.getElementById('password').value,
+        participation_type:       document.getElementById('partType').value,
+        team_name:                document.getElementById('teamName')?.value?.trim() || '',
+        referred_by:              document.getElementById('referredBy').value.trim().toUpperCase(),
+        payer_name:               document.getElementById('payerName').value.trim(),
+        payment_reference:        document.getElementById('paymentRef').value.trim(),
+        payment_date:             document.getElementById('paymentDate').value,
+        payment_screenshot_base64: screenshotBase64,
+      };
+
+      try {
+        const res = await fetch(API + '/api/register', {
+          method: 'POST', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload), credentials: 'include'
+        });
+        const data = await res.json();
+        if (data.success) {
+          showSuccess(data.referral_code);
+        } else {
+          showError(data.error || 'Registration failed. Please try again.');
+        }
+      } catch (err) {
+        showError('Connection error. Please check your internet and try again.');
+      }
+      btn.disabled = false;
+      btn.textContent = '// Complete Enrollment';
+    }
+
+    function showSuccess(refCode) {
+      document.getElementById('regForm').innerHTML = `
+        <div style="text-align:center; padding: 40px 20px;">
+          <div style="font-size:3.5rem; margin-bottom:16px;">🎉</div>
+          <h2 style="color:var(--neon-cyan); margin-bottom:12px;">// Application Submitted!</h2>
+          <p style="color:var(--text-sub); margin-bottom:24px; line-height:1.7;">
+            Your application is <strong>under review</strong>.<br>Admin will verify your payment screenshot and notify you within <strong>24 hours</strong>.
+          </p>
+          <div style="background:var(--bg-card); border:1px solid var(--neon-cyan); border-radius:var(--radius); padding:24px; margin-bottom:24px;">
+            <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.1em;">// Your Referral Code</div>
+            <div style="font-family:var(--font-mono); font-size:2rem; color:var(--neon-cyan); letter-spacing:0.1em;">${refCode}</div>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:8px;">Share this code with friends and earn scratch card rewards!</div>
+          </div>
+          <a href="login.html" class="btn btn-solid btn-lg">// Go to Login →</a>
+        </div>`;
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('errorAlert');
+      el.textContent = '⚠ ' + msg;
+      el.classList.add('show');
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function hideError() {
+      document.getElementById('errorAlert').classList.remove('show');
+    }
+
+    function showToast(msg, type = 'info') {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.className = 'show ' + type;
+      setTimeout(() => { t.className = ''; }, 3500);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Participant Dashboard — Sofzenix HackFest</title>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body { display:flex; height:100vh; overflow:hidden; background:#050505; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width:260px; min-width:220px;
+      background:var(--bg-surface); border-right:1px solid var(--bg-border);
+      display:flex; flex-direction:column; transition:transform 0.3s;
+    }
+    .side-brand { padding:28px 24px 20px; font-family:var(--font-mono); font-size:1.1rem; color:var(--neon-cyan); border-bottom:1px solid var(--bg-border); }
+    .side-nav { flex:1; padding:16px 10px; overflow-y:auto; }
+    .side-link {
+      display:flex; align-items:center; gap:12px; padding:11px 14px;
+      border-radius:8px; color:var(--text-muted); text-decoration:none;
+      font-size:13px; margin-bottom:4px; transition:all 0.25s; cursor:pointer;
+      background:none; border:none; width:100%; text-align:left;
+    }
+    .side-link:hover, .side-link.active { background:rgba(0,245,255,0.08); color:var(--neon-cyan); }
+    .side-link.hidden-tab { display:none; }
+    .side-footer { padding:16px; border-top:1px solid var(--bg-border); }
+
+    /* ── Top Bar ── */
+    .main-canvas { flex:1; display:flex; flex-direction:column; overflow-y:auto; min-width:0; }
+    .top-bar {
+      padding:14px 28px; background:var(--bg-surface); border-bottom:1px solid var(--bg-border);
+      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+      position:sticky; top:0; z-index:100;
+    }
+    #statusBadge {
+      padding:5px 14px; border-radius:20px; font-family:var(--font-mono);
+      font-size:12px; font-weight:700; letter-spacing:.06em;
+    }
+    .status-verified   { background:rgba(0,255,0,0.1); color:#0f0; border:1px solid #0f0; }
+    .status-pending    { background:rgba(255,200,0,0.1); color:#ffc800; border:1px solid #ffc800; }
+    .status-unverified { background:rgba(255,60,60,0.08); color:#f66; border:1px solid #f66; }
+
+    /* ── Content ── */
+    .content-pane { padding:28px; max-width:1100px; width:100%; margin:0 auto; }
+    .module-tab { display:none; }
+    .module-tab.active { display:block; }
+
+    /* ── Stats Grid ── */
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:18px; margin-bottom:28px; }
+    .stat-card { background:var(--bg-card); border:1px solid var(--bg-border); padding:22px 20px; border-radius:12px; }
+    .stat-card h4 { font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-muted); margin-bottom:8px; }
+    .stat-card .val { font-family:var(--font-mono); font-size:1.7rem; color:var(--neon-cyan); font-weight:700; }
+
+    /* ── Referral ── */
+    .ref-code-box {
+      background:var(--bg-surface); border:2px dashed var(--neon-cyan);
+      padding:22px; border-radius:12px; text-align:center; margin:20px 0;
+      font-family:var(--font-mono); font-size:2rem; letter-spacing:0.15em; color:var(--neon-cyan);
+    }
+
+    /* ── Team Table ── */
+    .team-member-row { display:flex; align-items:center; gap:16px; padding:14px; border-bottom:1px solid var(--bg-border); font-size:13px; }
+    .team-member-row:last-child { border-bottom:none; }
+    .member-avatar { width:36px; height:36px; border-radius:50%; background:rgba(0,245,255,0.15); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+
+    /* ── Leaderboard ── */
+    .lb-row { display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid var(--bg-border); font-size:13px; transition:background 0.2s; }
+    .lb-row:hover { background:rgba(0,245,255,0.04); }
+    .lb-row.is-me { background:rgba(0,245,255,0.08); border-left:3px solid var(--neon-cyan); }
+    .lb-rank { font-family:var(--font-mono); font-size:1rem; font-weight:700; color:var(--text-muted); width:40px; flex-shrink:0; }
+    .lb-rank.gold   { color:#FFD700; }
+    .lb-rank.silver { color:#C0C0C0; }
+    .lb-rank.bronze { color:#CD7F32; }
+    .lb-name { flex:1; font-weight:600; }
+    .lb-score { font-family:var(--font-mono); color:var(--neon-cyan); }
+    .lb-score.null-score { color:var(--text-muted); font-size:12px; }
+
+    /* ── Reward Tickets ── */
+    .reward-ticket {
+      cursor:pointer; background:rgba(0,245,255,0.06); border:1px dashed var(--neon-cyan);
+      border-radius:12px; padding:20px 10px; text-align:center; transition:transform 0.2s, background 0.2s;
+    }
+    .reward-ticket:hover { transform:translateY(-4px) scale(1.02); background:rgba(0,245,255,0.12); }
+
+    /* ── Mobile hamburger ── */
+    .hamburger-dash {
+      display:none; background:none; border:1px solid var(--bg-border);
+      color:var(--text-muted); border-radius:6px; padding:6px 10px; cursor:pointer; font-size:1.1rem;
+    }
+    @media(max-width:768px) {
+      body { position:relative; }
+      .sidebar {
+        position:fixed; top:0; left:-260px; height:100vh; z-index:1000;
+        transition:left 0.3s; box-shadow:4px 0 30px rgba(0,0,0,0.5);
+      }
+      .sidebar.open { left:0; }
+      .hamburger-dash { display:inline-flex; }
+      .content-pane { padding:16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="side-brand">// PARTICIPANT</div>
+    <nav class="side-nav" id="sideNav">
+      <button class="side-link active" onclick="switchMod('overview', this)"><span>📊</span> Overview</button>
+      <!-- Team tab: shown only for TEAM participants -->
+      <button class="side-link hidden-tab" id="tabTeam" onclick="switchMod('team', this)"><span>👥</span> Team Management</button>
+      <button class="side-link" onclick="switchMod('submission', this)"><span>🚀</span> Project Submission</button>
+      <button class="side-link" onclick="switchMod('referral', this)"><span>🎟️</span> Referral Rewards</button>
+      <button class="side-link" onclick="switchMod('leaderboard', this)"><span>🏆</span> Leaderboard</button>
+      <button class="side-link" onclick="switchMod('settings', this)"><span>⚙️</span> Profile Settings</button>
+    </nav>
+    <div class="side-footer">
+      <button class="btn btn-sm w-full" onclick="logout()">// LOGOUT</button>
+    </div>
+  </aside>
+
+  <!-- Main Canvas -->
+  <div class="main-canvas">
+    <header class="top-bar">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <button class="hamburger-dash" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div id="welcomeTxt" style="font-family:var(--font-mono); color:var(--text-primary);">// WELCOME, LOADING...</div>
+      </div>
+      <span id="statusBadge" class="status-pending">STATUS: LOADING</span>
+    </header>
+
+    <div class="content-pane">
+
+      <!-- ── OVERVIEW ── -->
+      <div id="mod-overview" class="module-tab active">
+        <div class="section-head"><h2>Account Overview</h2></div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h4>Event Status</h4>
+            <div class="val" id="cardEventStatus" style="font-size:1.2rem;">...</div>
+          </div>
+          <div class="stat-card">
+            <h4>Phase</h4>
+            <div class="val">PRELIMS</div>
+          </div>
+          <div class="stat-card">
+            <h4>Total Referrals</h4>
+            <div class="val" id="refCount">—</div>
+          </div>
+          <div class="stat-card">
+            <h4>Rank</h4>
+            <div class="val" id="cardRank">—</div>
+          </div>
+        </div>
+
+        <!-- Verification pending notice (shown if NOT verified) -->
+        <div class="card animate-fadeUp" id="noticeUnverified" style="display:none; border-color:rgba(255,200,0,0.3); background:rgba(255,200,0,0.04);">
+          <h3 style="color:#ffc800;">⏳ Payment Verification Pending</h3>
+          <p style="color:var(--text-muted); margin:10px 0 0;">Your registration payment is under review by the admin team. You'll be confirmed once verified. Usually takes 24–48 hours.</p>
+        </div>
+
+        <div class="card animate-fadeUp" id="noticeVerified" style="display:none;">
+          <h3>🎉 You're In! — Prelims Round</h3>
+          <p style="color:var(--text-muted); margin:12px 0;">The first evaluation round starts on <b>May 6th</b>. Make sure your project link is updated in the submission portal.</p>
+          <button class="btn btn-solid" onclick="switchMod('submission', null)">Go to Submission Portal</button>
+        </div>
+      </div>
+
+      <!-- ── TEAM MANAGEMENT ── -->
+      <div id="mod-team" class="module-tab">
+        <div class="section-head">
+          <h2>Team Management</h2>
+          <p>Your registered team — add and manage up to 4 members (including you)</p>
+        </div>
+        <div class="card" style="max-width:720px;">
+          <!-- Team Header -->
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+            <div>
+              <div style="font-family:var(--font-mono); font-size:1rem; color:var(--neon-cyan);" id="teamNameDisplay">// Team: —</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:4px;" id="teamCountDisplay">Members: Loading...</div>
+            </div>
+          </div>
+
+          <!-- Current Members List -->
+          <div id="teamMembersList" style="margin-bottom:24px;"></div>
+
+          <!-- Add Member Form -->
+          <div id="addMemberForm" style="border-top:1px solid var(--bg-border); padding-top:20px;">
+            <div style="font-family:var(--font-mono); font-size:11px; color:var(--neon-cyan); text-transform:uppercase; letter-spacing:.1em; margin-bottom:14px;">// Add New Member</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+              <div class="form-group" style="margin:0;">
+                <label>Full Name *</label>
+                <input type="text" id="newMemberName" placeholder="e.g. Rahul Sharma">
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label>Phone Number *</label>
+                <input type="tel" id="newMemberPhone" placeholder="10-digit number" maxlength="10">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Email Address *</label>
+              <input type="email" id="newMemberEmail" placeholder="e.g. rahul@gmail.com">
+            </div>
+            <button class="btn btn-solid" onclick="addTeamMember()" id="addMemberBtn">+ Add Member</button>
+            <div id="addMemberError" style="color:var(--danger); font-size:12px; display:none; margin-top:8px;"></div>
+          </div>
+          <div id="teamFullNotice" style="display:none; border-top:1px solid var(--bg-border); padding-top:20px; text-align:center; color:var(--text-muted); font-size:13px;">
+            ✅ Team is full (4/4 members). All spots filled!
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROJECT SUBMISSION ── -->
+      <div id="mod-submission" class="module-tab">
+        <div class="section-head"><h2>Project Submission</h2><p>Upload your project files and links</p></div>
+        <div class="card" style="max-width:640px;">
+          <div id="submissionNotice" style="display:none; background:rgba(255,200,0,0.06); border:1px solid rgba(255,200,0,0.3); border-radius:8px; padding:14px; margin-bottom:20px; color:#ffc800; font-size:13px;">
+            ⚠️ You must be verified before submitting your project.
+          </div>
+          <div class="form-group"><label>Project Title</label><input type="text" id="projTitle" placeholder="e.g. AI Health Assistant"></div>
+          <div class="form-group"><label>GitHub / Drive Link</label><input type="url" id="projLink" placeholder="https://github.com/..."></div>
+          <div class="form-group"><label>Tech Stack</label><input type="text" id="projStack" placeholder="Python, React, etc."></div>
+          <button class="btn btn-solid" style="margin-top:12px;" onclick="submitProject()">// Submit Project</button>
+        </div>
+      </div>
+
+      <!-- ── REFERRAL REWARDS ── -->
+      <div id="mod-referral" class="module-tab">
+        <div class="section-head"><h2>Referral Rewards</h2><p>Earn cash prizes for every verified team you bring!</p></div>
+        <div class="card" style="text-align:center; max-width:640px;">
+          <div style="font-size:3rem; margin-bottom:16px;">🎟️</div>
+          <p style="color:var(--text-muted); line-height:1.7;">Share your unique code. When someone registers using it, you earn a <b style="color:var(--neon-cyan)">Scratch Card</b> giving ₹50+ instantly upon verification!</p>
+          <div class="ref-code-box" id="refCode">LOADING...</div>
+          <button class="btn btn-solid" onclick="copyRef()">// Copy Referral Link</button>
+
+          <div style="margin-top:32px; text-align:left;">
+            <div class="section-label" style="color:var(--neon-cyan); margin-bottom:16px;">// My Unlocked Rewards</div>
+            <div id="rewardGallery" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:16px;">
+              <p style="color:var(--text-muted); font-size:12px; grid-column:1/-1;" id="noRewardsMsg">No rewards earned yet. Invite friends to unlock scratch cards! 🎯</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LEADERBOARD ── -->
+      <div id="mod-leaderboard" class="module-tab">
+        <div class="section-head"><h2>Live Leaderboard</h2><p>Real-time rankings based on judge evaluation</p></div>
+        <div class="card" style="padding:0; overflow:hidden;">
+          <div id="leaderboardBody">
+            <div style="padding:40px; text-align:center; color:var(--text-muted);">Loading leaderboard...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROFILE SETTINGS ── -->
+      <div id="mod-settings" class="module-tab">
+        <div class="section-head"><h2>Profile Settings</h2><p>Your registration details (read-only)</p></div>
+        <div class="card" style="max-width:600px;">
+          <div class="form-group"><label>Full Name</label><input type="text" id="profName" readonly style="opacity:.7;"></div>
+          <div class="form-group"><label>Email Address</label><input type="email" id="profEmail" readonly style="opacity:.7;"></div>
+          <div class="form-group"><label>Phone</label><input type="text" id="profPhone" readonly style="opacity:.7;"></div>
+          <div class="form-group"><label>College / Institution</label><input type="text" id="profCollege" readonly style="opacity:.7;"></div>
+          <div class="form-group"><label>Participation Type</label><input type="text" id="profType" readonly style="opacity:.7;"></div>
+          <p style="font-size:12px; color:var(--text-muted); margin-top:12px;">To update your profile, contact the organizers.</p>
+        </div>
+      </div>
+
+    </div><!-- /content-pane -->
+  </div><!-- /main-canvas -->
+
+  <div id="toast"></div>
+
+  <!-- Close sidebar when clicking outside on mobile -->
+  <div id="sidebarOverlay" onclick="document.getElementById('sidebar').classList.remove('open')"
+       style="display:none; position:fixed; inset:0; z-index:999; background:rgba(0,0,0,0.5);"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const API = CONFIG.API_URL;
+    let currentUser = null;
+
+    // ── Auth & Init ─────────────────────────────────────────────
+    (async () => {
+      try {
+        const token = localStorage.getItem('auth_token');
+        const res = await fetch(API + '/api/auth/me', {
+          headers: { 'Authorization': 'Bearer ' + token },
+          credentials: 'include'
+        });
+        const d = await res.json();
+        if (!d.logged_in) { window.location.href = 'login.html'; return; }
+
+        currentUser = d.user;
+        populateDashboard(d.user);
+      } catch(e) {
+        console.error(e);
+        window.location.href = 'login.html';
+      }
+    })();
+
+    function populateDashboard(u) {
+      // Welcome text
+      document.getElementById('welcomeTxt').textContent = '// WELCOME, ' + u.name.toUpperCase();
+
+      // ── Status Badge ──
+      const badge = document.getElementById('statusBadge');
+      if (u.is_verified) {
+        badge.textContent = 'STATUS: VERIFIED ✓';
+        badge.className = 'status-verified';
+      } else {
+        badge.textContent = 'STATUS: PENDING VERIFICATION';
+        badge.className = 'status-pending';
+      }
+
+      // ── Overview Cards ──
+      const statusEl = document.getElementById('cardEventStatus');
+      if (u.is_verified) {
+        statusEl.textContent = 'CONFIRMED';
+        statusEl.style.color = '#0f0';
+      } else {
+        statusEl.textContent = 'PENDING';
+        statusEl.style.color = '#ffc800';
+      }
+
+      // Rank — always null until scoring is live
+      document.getElementById('cardRank').textContent = '—';
+
+      // Referral count
+      document.getElementById('refCount').textContent = u.referral_count ?? 0;
+
+      // Show the right notice card
+      if (u.is_verified) {
+        document.getElementById('noticeVerified').style.display = 'block';
+      } else {
+        document.getElementById('noticeUnverified').style.display = 'block';
+      }
+
+      // ── Submission notice if not verified ──
+      if (!u.is_verified) {
+        document.getElementById('submissionNotice').style.display = 'block';
+      }
+
+      // ── Team Management Tab visibility ──
+      const tabTeam = document.getElementById('tabTeam');
+      if (u.participation_type === 'TEAM') {
+        tabTeam.classList.remove('hidden-tab');
+        populateTeam(u);
+      } else {
+        tabTeam.classList.add('hidden-tab');
+      }
+
+      // ── Referral code ──
+      document.getElementById('refCode').textContent = u.referral_code || '—';
+
+      // ── Scratch Cards ──
+      const gallery = document.getElementById('rewardGallery');
+      const noRewards = document.getElementById('noRewardsMsg');
+      const cards = u.scratch_cards || [];
+
+      if (cards.length > 0) {
+        noRewards.style.display = 'none';
+        cards.forEach(c => {
+          const el = document.createElement('div');
+          el.className = 'reward-ticket';
+          // Amount is hidden — revealed only after scratching on the scratch page
+          el.innerHTML = `
+            <div style="font-size:2.2rem; margin-bottom:8px;">🎟️</div>
+            <div style="font-family:var(--font-mono); font-size:12px; color:var(--neon-cyan); font-weight:700; letter-spacing:.05em;">SCRATCH CARD</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:6px;">Tap to reveal your reward!</div>
+          `;
+          el.onclick = () => {
+            window.location.href = 'scratch.html?t=' + c.token;
+          };
+          gallery.appendChild(el);
+        });
+      }
+
+      // ── Profile Settings ──
+      document.getElementById('profName').value    = u.name || '';
+      document.getElementById('profEmail').value   = u.email || '';
+      document.getElementById('profPhone').value   = u.phone || '';
+      document.getElementById('profCollege').value = u.college || '';
+      document.getElementById('profType').value    = u.participation_type === 'TEAM'
+        ? `TEAM — ${u.team_name || 'No team name'}` : 'INDIVIDUAL';
+    }
+
+    function populateTeam(u) {
+      document.getElementById('teamNameDisplay').textContent = '// Team: ' + (u.team_name || 'Unnamed');
+      const members = u.team_members || [];
+      document.getElementById('teamCountDisplay').textContent = `Members: ${members.length} / 4`;
+
+      // Show/hide add form vs full notice
+      const isFull = members.length >= 4;
+      const addForm  = document.getElementById('addMemberForm');
+      const fullNote = document.getElementById('teamFullNotice');
+      if (addForm)  addForm.style.display  = isFull ? 'none' : 'block';
+      if (fullNote) fullNote.style.display = isFull ? 'block' : 'none';
+
+      const list = document.getElementById('teamMembersList');
+      if (!members.length) {
+        list.innerHTML = '<div style="color:var(--text-muted); padding:16px 0; font-size:13px;">You are the only member so far. Add teammates below!</div>';
+        return;
+      }
+      list.innerHTML = members.map(m => `
+        <div class="team-member-row">
+          <div class="member-avatar">${m.is_leader ? '👑' : '👤'}</div>
+          <div style="flex:1;">
+            <div style="font-weight:600; color:var(--text-primary);">${m.name}
+              ${m.is_leader ? '<span style="font-size:10px; color:var(--neon-cyan); margin-left:6px;">(Leader — You)</span>' : ''}
+            </div>
+            <div style="font-size:12px; color:var(--text-muted);">${m.email}</div>
+          </div>
+          <div style="font-size:12px; color:var(--text-sub); margin-right:12px;">${m.phone || '—'}</div>
+          ${!m.is_leader ? `<button onclick="removeMember(${m.id}, '${m.name.replace(/'/g, '\\\'')}', this)" class="btn btn-sm btn-danger" style="padding:4px 10px;">✕</button>` : ''}
+        </div>`).join('');
+    }
+
+    async function addTeamMember() {
+      const name  = document.getElementById('newMemberName').value.trim();
+      const phone = document.getElementById('newMemberPhone').value.trim();
+      const email = document.getElementById('newMemberEmail').value.trim();
+      const errEl = document.getElementById('addMemberError');
+      errEl.style.display = 'none';
+
+      if (!name || !phone || !email) {
+        errEl.textContent = 'All fields are required.'; errEl.style.display = 'block'; return;
+      }
+      if (!email.includes('@')) {
+        errEl.textContent = 'Enter a valid email.'; errEl.style.display = 'block'; return;
+      }
+      if (phone.length < 10) {
+        errEl.textContent = 'Phone must be 10 digits.'; errEl.style.display = 'block'; return;
+      }
+
+      const btn = document.getElementById('addMemberBtn');
+      btn.disabled = true; btn.textContent = 'Adding...';
+
+      try {
+        const token = localStorage.getItem('auth_token');
+        const res = await fetch(API + '/api/team/members', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          credentials: 'include',
+          body: JSON.stringify({ name, phone, email })
+        });
+        const d = await res.json();
+        if (d.success) {
+          showToast(`✅ ${d.message}`, 'success');
+          ['newMemberName','newMemberPhone','newMemberEmail'].forEach(id => document.getElementById(id).value = '');
+          currentUser.team_members = currentUser.team_members || [];
+          currentUser.team_members.push({ ...d.member, is_leader: false });
+          populateTeam(currentUser);
+        } else {
+          errEl.textContent = d.error || 'Failed to add member.'; errEl.style.display = 'block';
+        }
+      } catch(e) {
+        errEl.textContent = 'Network error. Try again.'; errEl.style.display = 'block';
+      }
+      btn.disabled = false; btn.textContent = '+ Add Member';
+    }
+
+    async function removeMember(memberId, name, btn) {
+      if (!confirm(`Remove ${name} from the team?`)) return;
+      btn.disabled = true; btn.textContent = '...';
+      try {
+        const token = localStorage.getItem('auth_token');
+        const res = await fetch(API + `/api/team/members/${memberId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token },
+          credentials: 'include'
+        });
+        const d = await res.json();
+        if (d.success) {
+          showToast(`${name} removed.`, 'success');
+          currentUser.team_members = currentUser.team_members.filter(m => m.id !== memberId);
+          populateTeam(currentUser);
+        } else {
+          showToast(d.error || 'Failed to remove.', 'error');
+          btn.disabled = false; btn.textContent = '✕';
+        }
+      } catch(e) {
+        showToast('Network error.', 'error');
+        btn.disabled = false; btn.textContent = '✕';
+      }
+    }
+
+    async function loadLeaderboard() {
+      const token = localStorage.getItem('auth_token');
+      const res = await fetch(API + '/api/leaderboard', {
+        headers: { 'Authorization': 'Bearer ' + token },
+        credentials: 'include'
+      });
+      const d = await res.json();
+      const body = document.getElementById('leaderboardBody');
+
+      if (!d.success || !d.leaderboard.length) {
+        body.innerHTML = `<div style="padding:40px; text-align:center; color:var(--text-muted);">
+          No verified participants yet. Leaderboard will populate after verification and judging.
+        </div>`;
+        return;
+      }
+
+      body.innerHTML = d.leaderboard.map(r => {
+        const rankClass = r.rank === 1 ? 'gold' : r.rank === 2 ? 'silver' : r.rank === 3 ? 'bronze' : '';
+        const scoreHtml = r.score !== null
+          ? `<span class="lb-score">${r.score}</span>`
+          : `<span class="lb-score null-score">— (Not scored)</span>`;
+        return `
+          <div class="lb-row ${r.is_me ? 'is-me' : ''}">
+            <div class="lb-rank ${rankClass}">#${r.rank}</div>
+            <div class="lb-name">${r.name} ${r.is_me ? '<span style="font-size:11px; color:var(--neon-cyan);">(You)</span>' : ''}</div>
+            <span class="badge ${r.type === 'TEAM' ? 'badge-active' : 'badge-pending'}" style="font-size:10px;">${r.type}</span>
+            ${scoreHtml}
+          </div>`;
+      }).join('');
+    }
+
+    // ── Tab Switching ────────────────────────────────────────────
+    function switchMod(modId, el) {
+      document.querySelectorAll('.module-tab').forEach(m => m.classList.remove('active'));
+      document.getElementById('mod-' + modId).classList.add('active');
+      if (el) {
+        document.querySelectorAll('.side-link').forEach(l => l.classList.remove('active'));
+        el.classList.add('active');
+      }
+      // Close mobile sidebar
+      document.getElementById('sidebar').classList.remove('open');
+      // Lazy load leaderboard
+      if (modId === 'leaderboard') loadLeaderboard();
+    }
+
+    // ── Referral Copy ────────────────────────────────────────────
+    function copyRef() {
+      if (!currentUser) return;
+      const fullUrl = window.location.origin + '/register.html?ref=' + currentUser.referral_code;
+      navigator.clipboard.writeText(fullUrl).then(() => showToast('Referral link copied! 🔗', 'success'));
+    }
+
+    // ── Project Submission ───────────────────────────────────────
+    function submitProject() {
+      if (!currentUser?.is_verified) {
+        showToast('You must be verified before submitting.', 'error'); return;
+      }
+      const title = document.getElementById('projTitle').value.trim();
+      const link  = document.getElementById('projLink').value.trim();
+      if (!title || !link) { showToast('Please fill in the project title and link.', 'error'); return; }
+      // TODO: hook to backend when submission endpoint is ready
+      showToast('Submission received! (Backend coming soon)', 'success');
+    }
+
+    // ── Logout ───────────────────────────────────────────────────
+    async function logout() {
+      await fetch(API + '/api/auth/logout', { method: 'POST', credentials: 'include' });
+      localStorage.removeItem('auth_token');
+      window.location.href = 'login.html';
+    }
+
+    // ── Toast ────────────────────────────────────────────────────
+    function showToast(msg, type='info') {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.className = 'show ' + type;
+      setTimeout(() => { t.className = ''; }, 3500);
+    }
+
+    // Mobile sidebar overlay
+    document.getElementById('sidebar').addEventListener('transitionend', function() {
+      const overlay = document.getElementById('sidebarOverlay');
+      overlay.style.display = this.classList.contains('open') ? 'block' : 'none';
+    });
+  </script>
+</body>
+</html>
