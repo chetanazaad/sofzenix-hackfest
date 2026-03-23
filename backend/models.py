@@ -17,7 +17,7 @@ class User(UserMixin, db.Model):
     college               = db.Column(db.String(255), nullable=True)
     branch                = db.Column(db.String(100), nullable=True)
     year_of_study         = db.Column(db.String(10), nullable=True)
-    avatar_url            = db.Column(db.Text, nullable=True)
+    avatar_url            = db.Column(db.Text(16000000), nullable=True) # MediumText
     role                  = db.Column(db.Enum('participant', 'evaluator', 'admin'), default='participant')
     is_verified           = db.Column(db.Boolean, default=False)
     referral_code         = db.Column(db.String(12), unique=True, nullable=True)
@@ -25,7 +25,7 @@ class User(UserMixin, db.Model):
     participation_type    = db.Column(db.Enum('INDIVIDUAL', 'TEAM'), default='INDIVIDUAL')
     team_name             = db.Column(db.String(255), nullable=True)
     payment_reference     = db.Column(db.String(255), nullable=True)
-    payment_screenshot    = db.Column(db.Text, nullable=True)  # base64
+    payment_screenshot    = db.Column(db.Text(16000000), nullable=True) # base64 (MediumText)
     payer_name            = db.Column(db.String(255), nullable=True)  # name on payment app
     payment_date          = db.Column(db.String(20), nullable=True)   # date of payment
     created_at            = db.Column(db.DateTime, default=datetime.utcnow)
