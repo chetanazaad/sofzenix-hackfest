@@ -489,8 +489,10 @@
             : '<span class="badge badge-pending">Pending</span>'}</td>
           <td class="action-btns">
             <button class="btn btn-sm" onclick="viewScreenshot(${u.id})">🖼 Proof</button>
-            ${!u.is_verified ? `<button class="btn btn-sm btn-solid" onclick="verifyUser(${u.id})">✓ Verify</button>` : ''}
-            <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id}, '${u.name}')">✕</button>
+            ${!u.is_verified 
+              ? `<button class="btn btn-sm btn-solid" onclick="verifyUser(${u.id})">✓ Verify</button>` 
+              : `<button class="btn btn-sm" style="background:#25D366; color:#000; font-weight:700; border-color:#25D366;" onclick="sendWhatsApp('${escapeQuotes(u.phone)}', '${escapeQuotes(u.name)}', '${escapeQuotes(u.email)}', '${u.referral_code}')">💬 WA</button>`}
+            <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id}, '${escapeQuotes(u.name)}')">✕</button>
           </td>
         </tr>`).join('') || '<tr><td colspan="13" style="text-align:center; color:var(--text-muted); padding:32px;">No participants found</td></tr>';
       renderPagination('partPagination', data.pages, page, (p) => loadParticipants(p));
@@ -805,6 +807,29 @@
       if (current < pages) html += `<button class="page-btn" onclick="(${cb})(${current+1})">Next →</button>`;
       html += `<span class="page-info">Page ${current} / ${pages}</span>`;
       document.getElementById(id).innerHTML = html;
+    }
+
+    // ── Utility ───────────────────────────────────────────────
+    function escapeQuotes(str) {
+      return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    function sendWhatsApp(phone, name, email, refCode) {
+      if (!phone || phone === 'null' || phone === '-') {
+        showToast('No phone number available for this user', 'error');
+        return;
+      }
+      
+      let cleanPhone = phone.replace(/\D/g, '');
+      // Auto-prefix India code if not provided
+      if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+
+      const refLink = window.location.origin + '/register.html?ref=' + refCode;
+      
+      const text = `Hello *${name}* 👋\n\nYour registration for *Sofzenix HackFest 2026* is fully confirmed! 🎉\n\n📌 *YOUR DETAILS:*\n*Login ID:* ${email}\n*Password:* (The secure password you chose during registration)\n\n🎁 *EARN REWARDS:* 🎁\nRefer your friends to register using your unique code *${refCode}* and win cash scratch cards for every successful referral!\n\n🔗 *Share Your Link:*\n${refLink}\n\nBest of Luck! ⚡`;
+      
+      const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
     }
 
     // ── Toast ───────────────────────────────────────────────────
