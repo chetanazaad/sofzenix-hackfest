@@ -45,18 +45,19 @@ def create_app():
         # ─── FRESH DATABASE SETUP ───
         from sqlalchemy import text
         try:
-            # Connect to TiDB and ensure the target database exists
-            # We connect without a database name first to create it
             from sqlalchemy import create_engine
-            base_uri = Config.SQLALCHEMY_DATABASE_URI.rsplit('/', 1)[0] + '/mysql?ssl_ca=ca.pem'
-            temp_engine = create_engine(base_uri)
+            # Connect to TiDB root to ensure the new DB exists
+            # We must pass SSL args here as well
+            base_uri = Config.SQLALCHEMY_DATABASE_URI.rsplit('/', 1)[0] + '/mysql'
+            temp_engine = create_engine(base_uri, connect_args={"ssl": {"ca": "ca.pem"}})
             with temp_engine.connect() as conn:
                 conn.execute(text("CREATE DATABASE IF NOT EXISTS sofzenix_hackfest_live;"))
                 conn.commit()
-            print("[Sofzenix Hackfest] Database 'sofzenix_hackfest_live' is ready.")
+            print("[Sofzenix Hackfest] Database 'sofzenix_hackfest_live' verified/created.")
         except Exception as e:
-            print(f"[Sofzenix Hackfest] DB Creation skipped (might already exist): {e}")
+            print(f"[Sofzenix Hackfest] DB Creation info: {e}")
 
+        # Final check if tables need to be created
         db.create_all()
         _seed_admin(app)
         _seed_settings()
