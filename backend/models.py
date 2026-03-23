@@ -7,7 +7,7 @@ db = SQLAlchemy()
 
 # ─── Hackathon User ────────────────────────────────────────────────────────────
 class User(UserMixin, db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'sfz_users'
     id                    = db.Column(db.Integer, primary_key=True)
     google_id             = db.Column(db.String(255), unique=True, nullable=True)
     name                  = db.Column(db.String(255), nullable=False)
@@ -35,7 +35,7 @@ class User(UserMixin, db.Model):
 
 # ─── Admin User ────────────────────────────────────────────────────────────────
 class AdminUser(UserMixin, db.Model):
-    __tablename__ = 'admin_users'
+    __tablename__ = 'sfz_admin_users'
     id            = db.Column(db.Integer, primary_key=True)
     username      = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
@@ -44,12 +44,12 @@ class AdminUser(UserMixin, db.Model):
 
 # ─── Scratch Reward Link ──────────────────────────────────────────────────────
 class ScratchLink(db.Model):
-    __tablename__ = 'scratch_links'
+    __tablename__ = 'sfz_scratch_links'
     id               = db.Column(db.Integer, primary_key=True)
     token            = db.Column(db.String(20), unique=True, nullable=False, index=True)
     campaign_id      = db.Column(db.String(100), nullable=True)
     phone_number     = db.Column(db.String(15), nullable=True, index=True)
-    user_id          = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    user_id          = db.Column(db.Integer, db.ForeignKey('sfz_users.id'), nullable=True)
     reward_amount    = db.Column(db.Float, nullable=False)
     is_used          = db.Column(db.Boolean, default=False, nullable=False)
     created_at       = db.Column(db.DateTime, default=datetime.utcnow)
@@ -73,9 +73,9 @@ class ScratchLink(db.Model):
 
 # ─── Payment Log ──────────────────────────────────────────────────────────────
 class PaymentLog(db.Model):
-    __tablename__ = 'payment_logs'
+    __tablename__ = 'sfz_payment_logs'
     id            = db.Column(db.Integer, primary_key=True)
-    token         = db.Column(db.String(20), db.ForeignKey('scratch_links.token'), nullable=False)
+    token         = db.Column(db.String(20), db.ForeignKey('sfz_scratch_links.token'), nullable=False)
     upi_id        = db.Column(db.String(100), nullable=False)
     amount        = db.Column(db.Float, nullable=False)
     status        = db.Column(db.String(20), nullable=False)
@@ -92,7 +92,7 @@ class PaymentLog(db.Model):
 
 # ─── Reward Settings ─────────────────────────────────────────────────────────
 class RewardSettings(db.Model):
-    __tablename__ = 'reward_settings'
+    __tablename__ = 'sfz_reward_settings'
     id                       = db.Column(db.Integer, primary_key=True)
     min_amount               = db.Column(db.Float, default=50.0)
     max_amount               = db.Column(db.Float, default=350.0)
@@ -108,9 +108,9 @@ class RewardSettings(db.Model):
 
 # ─── Team Member (manually added by team leader) ────────────────────────────
 class TeamMember(db.Model):
-    __tablename__ = 'team_members'
+    __tablename__ = 'sfz_team_members'
     id         = db.Column(db.Integer, primary_key=True)
-    leader_id  = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    leader_id  = db.Column(db.Integer, db.ForeignKey('sfz_users.id'), nullable=False)
     name       = db.Column(db.String(255), nullable=False)
     email      = db.Column(db.String(255), nullable=False)
     phone      = db.Column(db.String(15), nullable=False)
