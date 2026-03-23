@@ -209,35 +209,39 @@
                 <span>Scratch the card to reveal your reward!</span>
             </div>
 
-            <!-- ── STEP 1: Reveal & Partial Redeem ── -->
-            <div class="step-section" id="section-redeem-start">
-                <div class="divider"></div>
-                <div class="step-title" style="color:#F59E0B; font-size: 1.2rem;">🎊 You won ₹<span id="revealed-amount"></span>!</div>
-                <p class="step-sub">This reward is locked to a specific phone number. Verify ownership to continue.</p>
-                <button class="btn-gold" id="btn-start-verify" onclick="startVerification()">💸 Redeem Now</button>
-            </div>
-
-            <!-- ── STEP 2: Phone Verify ── -->
+            <!-- ── STEP 1: Phone Verify (Revealed after scratch) ── -->
             <div class="step-section" id="section-phone">
                 <div class="divider"></div>
-                <div class="step-title">🔐 Verify Ownership</div>
-                <div class="step-sub">Enter the phone number linked to this reward.</div>
-                <input type="tel" class="inp" id="phone-input" placeholder="10-digit phone number" maxlength="10" inputmode="numeric">
-                <button class="btn-gold" id="btn-verify-phone" onclick="verifyPhone()">📱 Verify Identity</button>
+                <div class="step-title" style="color:#F59E0B; font-size: 1.2rem; margin-bottom: 4px;">🎊 REWARD REVEALED: ₹<span id="revealed-amount-phone"></span></div>
+                <div class="step-sub" style="margin-bottom: 20px;">To redeem, please verify the phone number linked to this card.</div>
+                
+                <input type="tel" class="inp" id="phone-input" placeholder="Enter linked 10-digit number" maxlength="10" inputmode="numeric">
+                <button class="btn-gold" id="btn-verify-phone" onclick="verifyPhone()">📱 Verify & Continue</button>
             </div>
 
-            <!-- ── STEP 3: Full Claim Form ── -->
+            <!-- ── STEP 2: Full Claim Form (Revealed after phone) ── -->
             <div class="step-section" id="section-claim">
                 <div class="divider"></div>
-                <div class="step-title">🏦 Payment Details</div>
-                <div class="step-sub">Almost there! Provide your details for manual verification and payout.</div>
+                <div class="step-title" style="color:#10B981; font-size: 1.2rem; margin-bottom: 4px;">✅ IDENTITY VERIFIED</div>
+                <div class="step-sub" style="margin-bottom: 20px;">Submit your payment details for manual processing.</div>
                 
-                <input type="text" class="inp" id="name-input" placeholder="Full Name (as per Bank/UPI)" autocomplete="name">
-                <input type="text" class="inp" id="upi-input" placeholder="UPI ID (e.g. name@bank)" autocomplete="off">
-                <input type="tel" class="inp" id="contact-input" placeholder="Contact Mobile Number" maxlength="10" inputmode="numeric">
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 11px; color: rgba(240,238,248,0.5); display: block; margin-bottom: 4px;">BENEFICIARY NAME</label>
+                    <input type="text" class="inp" id="name-input" placeholder="Full name as per Bank/UPI" autocomplete="name">
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 11px; color: rgba(240,238,248,0.5); display: block; margin-bottom: 4px;">UPI ID FOR PAYOUT</label>
+                    <input type="text" class="inp" id="upi-input" placeholder="e.g. name@okhdfcbank" autocomplete="off">
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 11px; color: rgba(240,238,248,0.5); display: block; margin-bottom: 4px;">CONTACT NUMBER</label>
+                    <input type="tel" class="inp" id="contact-input" placeholder="10-digit mobile number" maxlength="10" inputmode="numeric">
+                </div>
                 
-                <div class="inp-note">Ensure UPI ID and Phone are correct. Payments are non-reversible.</div>
-                <button class="btn-gold" id="claim-btn" onclick="submitClaim()">👑 Claim Reward</button>
+                <div class="inp-note" style="margin-bottom: 20px;">Ensure all details are correct. Verification takes 24-48 hours.</div>
+                <button class="btn-gold" id="claim-btn" onclick="submitClaim()">👑 Claim ₹<span id="revealed-amount-final"></span></button>
             </div>
         </div>
     </div>
@@ -306,7 +310,8 @@
                 document.getElementById('token-display').textContent  = TOKEN;
                 // Pre-populate amount so it shows AS the card is scratched
                 document.getElementById('reward-value').textContent   = rewardAmount;
-                document.getElementById('revealed-amount').textContent = rewardAmount;
+                document.getElementById('revealed-amount-phone').textContent = rewardAmount;
+                document.getElementById('revealed-amount-final').textContent = rewardAmount;
 
                 initCanvas();
             } catch(e) {
@@ -393,8 +398,8 @@
 
             document.getElementById('progress-bar').style.width = Math.min(pct, 100).toFixed(1) + '%';
 
-            // Very low threshold for safety (10% or final click)
-            if (pct >= 15 || (isFinal && pct >= 8)) {
+            // Increase threshold to 25% for a better "full scratch" experience
+            if (pct >= 25 || (isFinal && pct >= 12)) {
                 forceReveal();
             }
         }
@@ -412,27 +417,22 @@
             document.getElementById('scratch-hint').style.display = 'none';
             document.getElementById('reward-confetti').style.display = 'block';
 
-            showSection('section-redeem-start');
-            launchConfetti();
-        }
-
-        function showSection(id) {
-            document.getElementById(id).classList.add('visible');
-            // Scroll to it smoothly
-            setTimeout(() => {
-                document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 100);
-        }
-
-        function startVerification() {
-            document.getElementById('section-redeem-start').classList.remove('visible');
-            document.getElementById('section-redeem-start').classList.add('hidden');
-            
+            // Directly show verification form instead of intermediate button
             if (requiresPhone) {
                 showSection('section-phone');
             } else {
                 showSection('section-claim');
             }
+            launchConfetti();
+        }
+
+        function showSection(id) {
+            const el = document.getElementById(id);
+            el.classList.remove('hidden');
+            el.classList.add('visible');
+            setTimeout(() => {
+                el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
         }
 
         // ── PHONE VERIFY ──────────────────────────────────────────
