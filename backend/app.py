@@ -57,9 +57,11 @@ def create_app():
                 conn.execute(text(f"CREATE DATABASE {new_db_name};"))
                 conn.commit()
             
-            # Switch the app to use this new UNIQUE database
-            app.config['SQLALCHEMY_DATABASE_URI'] = Config.SQLALCHEMY_DATABASE_URI.rsplit('/', 1)[0] + f'/{new_db_name}?ssl_ca=ca.pem'
-            print(f"[Sofzenix Hackfest] Created UNIQUE fresh database: {new_db_name}")
+            # Switch the app and its engine to use this new UNIQUE database
+            new_uri = Config.SQLALCHEMY_DATABASE_URI.rsplit('/', 1)[0] + f'/{new_db_name}?ssl_ca=ca.pem'
+            app.config['SQLALCHEMY_DATABASE_URI'] = new_uri
+            db.engine = create_engine(new_uri)
+            print(f"[Sofzenix Hackfest] Created and switched to UNIQUE fresh database: {new_db_name}")
         except Exception as e:
             print(f"[Sofzenix Hackfest] DB Creation info: {e}")
 
