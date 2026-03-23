@@ -42,18 +42,24 @@ def create_app():
     app.register_blueprint(scratch_bp)
 
     with app.app_context():
-        # ─── FRESH DATABASE SETUP ───
+        # ─── FORCE FRESH DATABASE ───
         from sqlalchemy import text
+        import random, string
+        suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
+        new_db_name = f"sofzenix_live_{suffix}"
+        
         try:
             from sqlalchemy import create_engine
-            # Connect to TiDB root to ensure the new DB exists
-            # We must pass SSL args here as well
+            # Connect to TiDB root to create a UNIQUE fresh DB
             base_uri = Config.SQLALCHEMY_DATABASE_URI.rsplit('/', 1)[0] + '/mysql'
             temp_engine = create_engine(base_uri, connect_args={"ssl": {"ca": "ca.pem"}})
             with temp_engine.connect() as conn:
-                conn.execute(text("CREATE DATABASE IF NOT EXISTS sofzenix_hackfest_live;"))
+                conn.execute(text(f"CREATE DATABASE {new_db_name};"))
                 conn.commit()
-            print("[Sofzenix Hackfest] Database 'sofzenix_hackfest_live' verified/created.")
+            
+            # Switch the app to use this new UNIQUE database
+            app.config['SQLALCHEMY_DATABASE_URI'] = Config.SQLALCHEMY_DATABASE_URI.rsplit('/', 1)[0] + f'/{new_db_name}?ssl_ca=ca.pem'
+            print(f"[Sofzenix Hackfest] Created UNIQUE fresh database: {new_db_name}")
         except Exception as e:
             print(f"[Sofzenix Hackfest] DB Creation info: {e}")
 
