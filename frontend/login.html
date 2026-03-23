@@ -138,13 +138,13 @@
           <div style="background:rgba(255,215,0,0.06); border:1px solid var(--accent-yellow);
                        border-radius:var(--radius); padding:12px 16px; font-family:var(--font-mono);
                        font-size:12px; color:var(--accent-yellow); margin-bottom:20px;">
-            ⚠ Evaluator Access. Please use your official judging credentials.
+            ⚖️ Evaluator portal access. Use your official judging code/ID.
           </div>
           <div class="alert-error" id="evalError"></div>
           <form class="form-grid" onsubmit="evaluatorLogin(event)">
             <div class="form-group">
-              <label>Institutional Email</label>
-              <input type="email" id="evalEmail" required placeholder="evaluator@college.edu">
+              <label>Evaluator Login ID</label>
+              <input type="text" id="evalLoginId" required placeholder="e.g. eval_01">
             </div>
             <div class="form-group">
               <label>Evaluation Code</label>
@@ -221,23 +221,22 @@
     async function evaluatorLogin(e) {
       e.preventDefault();
       hideError('evalError');
-      const email = document.getElementById('evalEmail').value.trim();
+      const login_id = document.getElementById('evalLoginId').value.trim();
       const password = document.getElementById('evalPassword').value;
       const btn = e.target.querySelector('button');
       
       btn.disabled = true; btn.textContent = '// Authenticating...';
       try {
-        const res = await fetch(API + '/api/auth/login', {
+        const res = await fetch(API + '/api/evaluator/login', {
           method: 'POST', headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ login_id, password }),
           credentials: 'include'
         });
         const data = await res.json();
-        if (data.success && data.user.role === 'EVALUATOR') {
-          localStorage.setItem('auth_token', data.token);
+        if (data.success) {
           window.location.href = 'evaluator.html';
         } else {
-          showError('evalError', data.error || 'Access denied. Evaluator role required.');
+          showError('evalError', data.error || 'Access denied.');
         }
       } catch(e) { showError('evalError', 'Server unreachable'); }
       finally { btn.disabled = false; btn.textContent = '// Evaluator Sign In'; }
@@ -302,7 +301,15 @@
           return;
         }
 
-        // 2. Check participant / evaluator session
+        // 2. Check evaluator session
+        const evalRes = await fetch(API + '/api/evaluator/me', { credentials: 'include' });
+        const evalData = await evalRes.json();
+        if (evalData.logged_in) {
+          window.location.href = 'evaluator.html';
+          return;
+        }
+
+        // 3. Check participant session
         const token = localStorage.getItem('auth_token');
         const userRes = await fetch(API + '/api/auth/me', { 
            headers: { 'Authorization': 'Bearer ' + token },
@@ -310,8 +317,7 @@
         });
         const userData = await userRes.json();
         if (userData.logged_in) {
-          if (userData.user.role === 'EVALUATOR') window.location.href = 'evaluator.html';
-          else window.location.href = 'dashboard.html';
+          window.location.href = 'dashboard.html';
         }
       } catch(e) {}
     })();
