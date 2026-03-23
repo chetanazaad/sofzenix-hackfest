@@ -230,8 +230,11 @@
   <nav class="navbar">
     <a href="index.html" class="nav-logo">⚡ Skil<span>Station</span></a>
     <div class="nav-links">
-      <a href="register.html">Events</a>
-      <a href="login.html" class="btn">Login</a>
+      <a href="#about">About</a>
+      <a href="#themes">Themes</a>
+      <a href="#prizes">Prizes</a>
+      <a href="#timeline">Timeline</a>
+      <a href="register.html" class="btn">Register</a>
     </div>
     <button class="hamburger" onclick="toggleMobileNav()">☰</button>
   </nav>
@@ -240,8 +243,11 @@
   <div class="overlay" id="overlay" onclick="toggleMobileNav()"></div>
   <div class="mobile-nav" id="mobileNav">
     <button class="mobile-nav-close" onclick="toggleMobileNav()">✕</button>
-    <a href="register.html">Events</a>
-    <a href="login.html" style="color:var(--neon-cyan);">Login</a>
+    <a href="#about">About</a>
+    <a href="#themes">Themes</a>
+    <a href="#prizes">Prizes</a>
+    <a href="#timeline">Timeline</a>
+    <a href="register.html" style="color:var(--neon-cyan);">Register</a>
   </div>
 
   <div class="hero">
@@ -272,7 +278,7 @@
   </div>
 
   <!-- Interactive Terminal Section -->
-  <section class="gsap-fade" style="padding: 60px 20px;">
+  <section class="gsap-fade" id="about" style="padding: 60px 20px;">
     <h2 style="text-align:center; font-family:var(--font-mono); color:#fff; margin-bottom:20px;">// SYSTEM_ACCESS</h2>
     <div class="terminal-container">
       <div class="terminal-header">
@@ -281,37 +287,153 @@
         <div class="term-btn term-g"></div>
       </div>
       <div class="terminal-body" id="term-body">
-        <div class="term-p"><span class="term-prompt">root@hackfest:~#</span> ./run_hackathon.sh</div>
-        <div class="term-response">> Booting Sofzenix HackFest 2026 Core Engine... [OK]</div>
-        <div class="term-response">> Loading prize pool: ₹4,00,000+... [OK]</div>
-        <div class="term-response">> Activating Agentic AI modules... [OK]</div>
-        <div class="term-p"><span class="term-prompt">root@hackfest:~#</span> await user.registration()</div>
-        <div class="term-response" style="color:var(--neon-cyan); animation:blink 1s infinite;">> Waiting for top-tier developers... _</div>
+        <div class="term-p"><span class="term-prompt">root@skilstation:~#</span> ./about_us.sh</div>
+        <div class="term-response">> SKILSTATION HACKATHON 2K26 IS A NEXT-GENERATION INNOVATION HUB FOCUSED ON DESIGNING AND DEPLOYING REAL-WORLD SOLUTIONS.</div>
+        <div class="term-response">> BUILD WHAT THINKS. BUILD WHAT ACTS. BUILD WHAT LEADS.</div>
+        <div class="term-p"><span class="term-prompt">root@skilstation:~#</span> cat specs.json</div>
+        <div class="term-response">
+          { <br>
+            &nbsp;&nbsp;"Name": "SKILSTATION_HACK_2K26", <br>
+            &nbsp;&nbsp;"Theme": "Open Innovation", <br>
+            &nbsp;&nbsp;"Objective": "Solutions For Real World Impact", <br>
+            &nbsp;&nbsp;"Scale": "3000+ Innovators | 36 Hours Execution" <br>
+          }
+        </div>
+        <div class="term-p"><span class="term-prompt">root@skilstation:~#</span> <span style="color:var(--neon-cyan); animation:blink 1s infinite;">_</span></div>
       </div>
     </div>
   </section>
 
-  <!-- Features Grid -->
-  <section class="features" id="events" style="margin-top:50px;">
-    <div class="feat-card glass-card gsap-card">
-      <div style="font-size:2.5rem; margin-bottom:20px;">🧠</div>
-      <h3>// Agentic AI</h3>
-      <p>Build autonomous agents capable of reasoning, planning, and executing complex workflows. Push the boundaries of modern AI.</p>
-    </div>
-    <div class="feat-card glass-card gsap-card">
-      <div style="font-size:2.5rem; margin-bottom:20px;">💎</div>
-      <h3>// Massive Prize Pool</h3>
-      <p>Win a share of ₹4,00,000 in cash prizes. Plus, guaranteed referral scratch cards and exclusive internships strictly for the top 50 teams.</p>
-    </div>
-    <div class="feat-card glass-card gsap-card">
-      <div style="font-size:2.5rem; margin-bottom:20px;">🌐</div>
-      <h3>// 100% Remote</h3>
-      <p>Compete from anywhere in India. 36 hours of rigorous building, mentored completely online through our dedicated judging platform.</p>
+  <!-- Themes/Tracks Section -->
+  <section id="themes" class="gsap-fade" style="padding: 80px 20px; max-width: 1200px; margin: 0 auto;">
+    <h2 style="text-align:center; font-family:var(--font-mono); color:#fff; margin-bottom:40px;">// INNOVATION_TRACKS</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+      <div class="glass-card" style="padding: 30px;">
+        <span style="color:var(--neon-cyan); font-family:var(--font-mono); font-size: 0.8rem;">[ INFRASTRUCTURE ]</span>
+        <h3 style="color:#fff; margin: 15px 0;">AGENT OS (INFRA)</h3>
+        <p style="color:var(--text-muted); font-size: 0.95rem;">Build infrastructure for intelligent agents, orchestration, and persistent memory systems.</p>
+      </div>
+      <div class="glass-card" style="padding: 30px;">
+        <span style="color:var(--neon-purple); font-family:var(--font-mono); font-size: 0.8rem;">[ AUTOMATION ]</span>
+        <h3 style="color:#fff; margin: 15px 0;">AUTONOMOUS SYSTEMS</h3>
+        <p style="color:var(--text-muted); font-size: 0.95rem;">Self-operating AI for healthcare, logistics, and real-time decision-making environments.</p>
+      </div>
+      <div class="glass-card" style="padding: 30px;">
+        <span style="color:var(--neon-cyan); font-family:var(--font-mono); font-size: 0.8rem;">[ RESEARCH ]</span>
+        <h3 style="color:#fff; margin: 15px 0;">AUTONOMOUS RESEARCH</h3>
+        <p style="color:var(--text-muted); font-size: 0.95rem;">Intelligent data exploration and structured conclusion engines for deep analysis.</p>
+      </div>
+      <div class="glass-card" style="padding: 30px;">
+        <span style="color:var(--neon-purple); font-family:var(--font-mono); font-size: 0.8rem;">[ INTERACTIVE ]</span>
+        <h3 style="color:#fff; margin: 15px 0;">ADAPTIVE WORLDS</h3>
+        <p style="color:var(--text-muted); font-size: 0.95rem;">Dynamic environments and NPCs that maintain memory, evolve, and interact naturally.</p>
+      </div>
+      <div class="glass-card" style="padding: 30px;">
+        <span style="color:var(--neon-cyan); font-family:var(--font-mono); font-size: 0.8rem;">[ COLLABORATION ]</span>
+        <h3 style="color:#fff; margin: 15px 0;">SWARM INTELLIGENCE</h3>
+        <p style="color:var(--text-muted); font-size: 0.95rem;">Multi-agent systems that delegate tasks, resolve conflicts, and achieve complex goals.</p>
+      </div>
+      <div class="glass-card" style="padding: 30px;">
+        <span style="color:var(--neon-yellow); font-family:var(--font-mono); font-size: 0.8rem;">[ DECISION ]</span>
+        <h3 style="color:#fff; margin: 15px 0;">DECISION ENGINES</h3>
+        <p style="color:var(--text-muted); font-size: 0.95rem;">High-impact autonomous choices for finance, policy, and organizational strategy.</p>
+      </div>
     </div>
   </section>
 
+  <!-- Prizes Section -->
+  <section id="prizes" class="gsap-fade" style="padding: 80px 20px; background: rgba(10, 10, 15, 0.5);">
+    <h2 style="text-align:center; font-family:var(--font-mono); color:#fff; margin-bottom:40px;">// PRIZE_POOL</h2>
+    <div style="max-width: 900px; margin: 0 auto; display: grid; gap: 20px;">
+      <div class="glass-card" style="display: flex; align-items: center; justify-content: space-between; padding: 25px 40px;">
+        <div>
+          <h3 style="color:var(--neon-yellow); font-size: 1.5rem;">🏆 Grand Champion</h3>
+          <p style="color:var(--text-muted);">Top Innovation & Execution</p>
+        </div>
+        <div style="font-family:var(--font-mono); font-size: 1.8rem; color:#fff;">₹15,000</div>
+      </div>
+      <div class="glass-card" style="display: flex; align-items: center; justify-content: space-between; padding: 25px 40px;">
+        <div>
+          <h3 style="color:#e0e0e0; font-size: 1.5rem;">🥈 Second Winner</h3>
+          <p style="color:var(--text-muted);">Outstanding Technical Implementation</p>
+        </div>
+        <div style="font-family:var(--font-mono); font-size: 1.8rem; color:#fff;">₹10,000</div>
+      </div>
+      <div class="glass-card" style="display: flex; align-items: center; justify-content: space-between; padding: 25px 40px;">
+        <div>
+          <h3 style="color:#cd7f32; font-size: 1.5rem;">🥉 Third Winner</h3>
+          <p style="color:var(--text-muted);">Remarkable Creativity & Impact</p>
+        </div>
+        <div style="font-family:var(--font-mono); font-size: 1.8rem; color:#fff;">₹5,000</div>
+      </div>
+      <div style="text-align:center; margin-top: 20px; color:var(--text-muted);">
+        <p>+ Internship Opportunities, Vouchers & E-Certificates for all participants.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Selection Process -->
+  <section class="gsap-fade" style="padding: 100px 20px; max-width: 1100px; margin: 0 auto;">
+    <h2 style="text-align:center; font-family:var(--font-mono); color:#fff; margin-bottom:50px;">// SELECTION_PROCESS</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+      <div style="text-align:center;">
+        <div style="font-size: 2.5rem; color:var(--neon-cyan); margin-bottom:15px;">01</div>
+        <h4 style="color:#fff; margin-bottom:10px;">Idea Selection</h4>
+        <p style="color:var(--text-muted); font-size:0.85rem;">Focus on real-world impact and multi-step reasoning.</p>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size: 2.5rem; color:var(--neon-purple); margin-bottom:15px;">02</div>
+        <h4 style="color:#fff; margin-bottom:10px;">Proposed Solution</h4>
+        <p style="color:var(--text-muted); font-size:0.85rem;">Evaluation of architecture, stack, and scalability.</p>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size: 2.5rem; color:var(--neon-cyan); margin-bottom:15px;">03</div>
+        <h4 style="color:#fff; margin-bottom:10px;">Team Shortlist</h4>
+        <p style="color:var(--text-muted); font-size:0.85rem;">Top 100 teams selected based on innovation score.</p>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size: 2.5rem; color:var(--neon-purple); margin-bottom:15px;">04</div>
+        <h4 style="color:#fff; margin-bottom:10px;">The Hackathon</h4>
+        <p style="color:var(--text-muted); font-size:0.85rem;">36-hour intense execution and building phase.</p>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size: 2.5rem; color:var(--neon-cyan); margin-bottom:15px;">05</div>
+        <h4 style="color:#fff; margin-bottom:10px;">Demonstration</h4>
+        <p style="color:var(--text-muted); font-size:0.85rem;">Final pitching and live prototype demo to judges.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Guidelines -->
+  <section class="gsap-fade" style="padding: 80px 20px; max-width: 900px; margin: 0 auto;">
+    <h2 style="text-align:center; font-family:var(--font-mono); color:#fff; margin-bottom:40px;">// PARTICIPATION_GUIDELINES</h2>
+    <div class="glass-card" style="padding: 40px;">
+      <ul style="color:var(--text-muted); list-style: none; padding: 0;">
+        <li style="margin-bottom: 20px; display: flex; gap: 15px;">
+          <span style="color:var(--neon-cyan);">⚡</span>
+          <span>Teams must consist of 1-4 members. Inter-college teams are permitted.</span>
+        </li>
+        <li style="margin-bottom: 20px; display: flex; gap: 15px;">
+          <span style="color:var(--neon-cyan);">⚡</span>
+          <span>Develop high-quality code with a security-first mindset and detailed documentation.</span>
+        </li>
+        <li style="margin-bottom: 20px; display: flex; gap: 15px;">
+          <span style="color:var(--neon-cyan);">⚡</span>
+          <span>All submissions must be original. Plagiarism leads to immediate disqualification.</span>
+        </li>
+        <li style="margin-bottom: 20px; display: flex; gap: 15px;">
+          <span style="color:var(--neon-cyan);">⚡</span>
+          <span>Focus on "Open Innovation" — solving real-world user problems effectively.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <!-- Features section removed -->
+
   <!-- Timeline -->
-  <section style="padding:50px 0;">
+  <section id="timeline" style="padding:50px 0;">
     <h2 style="text-align:center; font-family:var(--font-mono); color:#fff; margin-bottom:20px;">// CAMPAIGN_TIMELINE</h2>
     <div class="timeline">
       <div class="timeline-item gsap-timeline">
