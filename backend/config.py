@@ -26,7 +26,8 @@ def _build_db_uri() -> str:
     name     = os.environ.get('DB_NAME', 'sofzenix_hackfest')
 
     if host:
-        return f"mysql+pymysql://{user}:{password}@{host}:{port}/{name}"
+        # TiDB Cloud requires SSL
+        return f"mysql+pymysql://{user}:{password}@{host}:{port}/{name}?ssl_ca=ca.pem"
 
     # Absolute fallback — SQLite (good enough for Render testing without a DB)
     return 'sqlite:///sofzenix_hackfest.db'
