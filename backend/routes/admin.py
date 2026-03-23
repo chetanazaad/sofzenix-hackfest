@@ -2,7 +2,7 @@ import json, re, bcrypt, io
 from datetime import datetime
 from flask import Blueprint, request, jsonify, session
 from functools import wraps
-from models import db, AdminUser, User, ScratchLink, PaymentLog, RewardSettings
+from models import db, AdminUser, User, ScratchLink, PaymentLog, RewardSettings, Evaluator, Evaluation
 from utils.link_generator import generate_unique_token
 from utils.reward_engine import generate_reward
 
@@ -397,3 +397,117 @@ def update_settings():
         settings.razorpayx_account_number = data['razorpayx_account_number']
     db.session.commit()
     return jsonify({'success': True}), 200
+
+
+# ── Evaluator Management ──────────────────────────────────────────────────────
+
+@admin_bp.route('/api/admin/evaluators', methods=['GET'])
+@admin_required
+def list_evaluators():
+    evaluators = Evaluator.query.order_by(Evaluator.created_at.desc()).all()
+    result = []
+    for ev in evaluators:
+        d = ev.to_dict()
+        d['evaluation_count'] = Evaluation.query.filter_by(evaluator_id=ev.id).count()
+        d['completed_count']  = Evaluation.query.filter_by(evaluator_id=ev.id, status='COMPLETED').count()
+        result.append(d)
+    return jsonify({'evaluators': result, 'total': len(result)}), 200
+
+
+@admin_bp.route('/api/admin/evaluators', methods=['POST'])
+@admin_required
+def create_evaluator():
+    data = request.get_json() or {}
+    name     = data.get('name', '').strip()
+    login_id = data.get('login_id', '').strip()
+    password = data.get('password', '').strip()
+
+    if not name or not login_id or not password:
+        return jsonify({'success': False, 'error': 'Name, login_id, and password are required'}), 400
+    if len(password) < 4:
+        return jsonify({'success': False, 'error': 'Password must be at least 4 characters'}), 400
+    if Evaluator.query.filter_by(login_id=login_id).first():
+        return jsonify({'success': False, 'error': f'Login ID "{login_id}" already exists'}), 409
+
+    ev = Evaluator(name=name, login_id=login_id, password=password)
+    db.session.add(ev)
+    db.session.commit()
+    return jsonify({'success': True, 'evaluator': ev.to_dict()}), 201
+
+
+@admin_bp.route('/api/admin/evaluators/<int:eid>', methods=['DELETE'])
+@admin_required
+def delete_evaluator(eid):
+    ev = Evaluator.query.get(eid)
+    if not ev:
+        return jsonify({'success': False, 'error': 'Evaluator not found'}), 404
+    # Cascading: remove evaluations done by this evaluator
+    Evaluation.query.filter_by(evaluator_id=eid).delete()
+    db.session.delete(ev)
+    db.session.commit()
+    return jsonify({'success': True}), 200
+
+
+@admin_bp.route('/api/admin/evaluators/<int:eid>/evaluations', methods=['GET'])
+@admin_required
+def evaluator_evaluations(eid):
+    ev = Evaluator.query.get(eid)
+    if not ev:
+        return jsonify({'success': False, 'error': 'Evaluator not found'}), 404
+    evals = Evaluation.query.filter_by(evaluator_id=eid).order_by(Evaluation.chosen_at.desc()).all()
+    result = []
+    for e in evals:
+        d = e.to_dict()
+        u = User.query.get(e.participant_id)
+        d['participant_name'] = u.name if u else 'Unknown'
+        d['participant_email'] = u.email if u else ''
+        result.append(d)
+    return jsonify({'evaluator': ev.to_dict(), 'evaluations': result}), 200
+
+
+@admin_bp.route('/api/admin/evaluations/leaderboard', methods=['GET'])
+@admin_required
+def admin_leaderboard():
+    evals = (Evaluation.query
+             .filter_by(status='COMPLETED')
+             .order_by(Evaluation.total_score.desc())
+             .all())
+    result = []
+    for rank, e in enumerate(evals, 1):
+        u   = User.query.get(e.participant_id)
+        ev  = Evaluator.query.get(e.evaluator_id)
+        result.append({
+            'rank': rank,
+            'participant_name': u.name if u else 'Unknown',
+            'participant_email': u.email if u else '',
+            'college': u.college if u else '',
+            'team_name': u.team_name if u else '',
+            'participation_type': u.participation_type if u else '',
+            'evaluator_name': ev.name if ev else 'Unknown',
+            'total_score': e.total_score,
+            'innovation_score': e.innovation_score,
+            'technical_score': e.technical_score,
+            'impact_score': e.impact_score,
+            'presentation_score': e.presentation_score,
+            'scalability_score': e.scalability_score,
+            'comments': e.comments,
+            'completed_at': e.completed_at.isoformat() if e.completed_at else None,
+        })
+    return jsonify({'leaderboard': result, 'total': len(result)}), 200
+
+
+@admin_bp.route('/api/admin/evaluations', methods=['GET'])
+@admin_required
+def all_evaluations():
+    """All evaluations with participant + evaluator info."""
+    evals = Evaluation.query.order_by(Evaluation.chosen_at.desc()).all()
+    result = []
+    for e in evals:
+        u  = User.query.get(e.participant_id)
+        ev = Evaluator.query.get(e.evaluator_id)
+        d  = e.to_dict()
+        d['participant_name']  = u.name  if u  else 'Unknown'
+        d['participant_email'] = u.email if u  else ''
+        d['evaluator_name']    = ev.name if ev else 'Unknown'
+        result.append(d)
+    return jsonify({'evaluations': result, 'total': len(result)}), 200

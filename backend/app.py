@@ -32,14 +32,16 @@ def create_app():
     )
 
     # Register blueprints
-    from routes.auth    import auth_bp
-    from routes.register import register_bp
-    from routes.admin   import admin_bp
-    from routes.scratch import scratch_bp
+    from routes.auth      import auth_bp
+    from routes.register  import register_bp
+    from routes.admin     import admin_bp
+    from routes.scratch   import scratch_bp
+    from routes.evaluator import evaluator_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(register_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(scratch_bp)
+    app.register_blueprint(evaluator_bp)
 
     with app.app_context():
         # 1. Ensure all tables exist

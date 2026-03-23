@@ -117,3 +117,63 @@ class TeamMember(db.Model):
     added_at   = db.Column(db.DateTime, default=datetime.utcnow)
 
     leader = db.relationship('User', backref=db.backref('team_extra_members', lazy=True))
+
+
+# ─── Evaluator ────────────────────────────────────────────────────────────────
+class Evaluator(db.Model):
+    __tablename__ = 'sfz_evaluators'
+    id          = db.Column(db.Integer, primary_key=True)
+    name        = db.Column(db.String(255), nullable=False)
+    login_id    = db.Column(db.String(100), unique=True, nullable=False)
+    password    = db.Column(db.String(255), nullable=False)   # plain text (same pattern as old project)
+    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login  = db.Column(db.DateTime, nullable=True)
+
+    evaluations = db.relationship('Evaluation', backref='evaluator', lazy=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id, 'name': self.name, 'login_id': self.login_id,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'last_login': self.last_login.isoformat() if self.last_login else None,
+        }
+
+
+# ─── Evaluation (project scoring by an evaluator) ────────────────────────────
+class Evaluation(db.Model):
+    __tablename__ = 'sfz_evaluations'
+    id                  = db.Column(db.Integer, primary_key=True)
+    participant_id      = db.Column(db.Integer, db.ForeignKey('sfz_users.id'), nullable=False)
+    evaluator_id        = db.Column(db.Integer, db.ForeignKey('sfz_evaluators.id'), nullable=False)
+    status              = db.Column(db.String(20), default='IN_PROGRESS')   # IN_PROGRESS | COMPLETED
+    innovation_score    = db.Column(db.Integer, default=0)
+    technical_score     = db.Column(db.Integer, default=0)
+    impact_score        = db.Column(db.Integer, default=0)
+    presentation_score  = db.Column(db.Integer, default=0)
+    scalability_score   = db.Column(db.Integer, default=0)
+    total_score         = db.Column(db.Integer, default=0)
+    comments            = db.Column(db.Text, nullable=True)
+    meet_link           = db.Column(db.String(500), nullable=True)
+    chosen_at           = db.Column(db.DateTime, default=datetime.utcnow)
+    completed_at        = db.Column(db.DateTime, nullable=True)
+
+    participant = db.relationship('User', backref=db.backref('evaluation', uselist=False))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'participant_id': self.participant_id,
+            'evaluator_id': self.evaluator_id,
+            'status': self.status,
+            'innovation_score': self.innovation_score,
+            'technical_score': self.technical_score,
+            'impact_score': self.impact_score,
+            'presentation_score': self.presentation_score,
+            'scalability_score': self.scalability_score,
+            'total_score': self.total_score,
+            'comments': self.comments,
+            'meet_link': self.meet_link,
+            'chosen_at': self.chosen_at.isoformat() if self.chosen_at else None,
+            'completed_at': self.completed_at.isoformat() if self.completed_at else None,
+        }
+

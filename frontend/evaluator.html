@@ -7,39 +7,99 @@
   <link rel="stylesheet" href="css/main.css">
   <style>
     body { display:flex; height:100vh; overflow:hidden; background:#050505; }
-    
+
     /* Sidebar */
-    .sidebar { width:260px; background:var(--bg-surface); border-right:1px solid var(--bg-border); display:flex; flex-direction:column; }
-    .side-brand { padding:32px 24px; font-family:var(--font-mono); font-size:1.2rem; color:var(--accent-yellow); border-bottom:1px solid var(--bg-border); }
-    .side-nav { flex:1; padding:20px 12px; }
-    .side-link { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:8px; color:var(--text-muted); text-decoration:none; font-size:14px; margin-bottom:4px; transition:all 0.3s; }
+    .sidebar { width:250px; background:var(--bg-surface); border-right:1px solid var(--bg-border);
+               display:flex; flex-direction:column; flex-shrink:0; }
+    .side-brand { padding:28px 20px 20px; font-family:var(--font-mono); font-size:1rem;
+                  color:var(--accent-yellow); border-bottom:1px solid var(--bg-border); }
+    .side-brand small { display:block; font-size:0.7rem; color:var(--text-muted); margin-top:4px; }
+    .side-nav { flex:1; padding:16px 10px; }
+    .side-link { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px;
+                 color:var(--text-muted); text-decoration:none; font-size:13px; margin-bottom:2px;
+                 cursor:pointer; background:none; border:none; width:100%; text-align:left;
+                 transition:all 0.2s; }
     .side-link:hover, .side-link.active { background:rgba(255,215,0,0.08); color:var(--accent-yellow); }
-    .side-footer { padding:20px; border-top:1px solid var(--bg-border); }
-    
-    /* Main Content */
+    .side-footer { padding:16px; border-top:1px solid var(--bg-border); }
+
+    /* Main */
     .main-canvas { flex:1; display:flex; flex-direction:column; overflow-y:auto; }
-    .top-bar { padding:16px 32px; background:var(--bg-surface); border-bottom:1px solid var(--bg-border); display:flex; justify-content:space-between; align-items:center; }
-    .content-pane { padding:32px; max-width:1100px; width:100%; margin:0 auto; }
-    
-    /* Tables and Cards */
-    .proj-card { background:var(--bg-card); border:1px solid var(--bg-border); 
-                 padding:28px; border-radius:12px; margin-bottom:20px; position:relative; }
-    .score-badge { position:absolute; top:20px; right:20px; background:var(--accent-yellow); color:#000; padding:4px 12px; border-radius:4px; font-weight:bold; }
+    .top-bar { padding:14px 28px; background:var(--bg-surface); border-bottom:1px solid var(--bg-border);
+               display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+    .content-pane { padding:28px; max-width:1100px; width:100%; margin:0 auto; }
+
+    /* Stats row */
+    .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:28px; }
+    .stat-card { background:var(--bg-card); border:1px solid var(--bg-border); border-radius:10px;
+                 padding:20px; text-align:center; }
+    .stat-num { font-family:var(--font-mono); font-size:2rem; color:var(--accent-yellow); font-weight:800; }
+    .stat-lbl { font-size:12px; color:var(--text-muted); margin-top:4px; }
+
+    /* Project cards */
+    .proj-card { background:var(--bg-card); border:1px solid var(--bg-border); padding:22px;
+                 border-radius:10px; margin-bottom:16px; position:relative; transition:border-color 0.2s; }
+    .proj-card:hover { border-color: rgba(255,215,0,0.3); }
+    .proj-badge { position:absolute; top:16px; right:16px; padding:3px 10px; border-radius:4px;
+                  font-size:11px; font-weight:700; font-family:var(--font-mono); }
+    .badge-available { background:rgba(0,245,255,0.15); color:var(--neon-cyan); }
+    .badge-inprogress { background:rgba(255,215,0,0.15); color:var(--accent-yellow); }
+    .badge-completed { background:rgba(39,201,63,0.15); color:#27c93f; }
+    .badge-taken { background:rgba(255,80,80,0.15); color:#ff5050; }
+
+    /* Score form */
+    .score-form { margin-top:16px; padding-top:16px; border-top:1px solid var(--bg-border); display:none; }
+    .score-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:14px; }
+    .score-input label { font-size:11px; color:var(--text-muted); display:block; margin-bottom:4px; }
+    .score-input input { width:100%; background:var(--bg-surface); border:1px solid var(--bg-border);
+                         color:var(--text-primary); border-radius:6px; padding:7px 10px;
+                         font-family:var(--font-mono); font-size:0.85rem; }
+    textarea.comments-field { width:100%; background:var(--bg-surface); border:1px solid var(--bg-border);
+                              color:var(--text-primary); border-radius:6px; padding:8px 10px;
+                              font-family:var(--font-mono); font-size:0.82rem; resize:vertical;
+                              margin-top:10px; }
+
+    /* Table */
+    .tbl-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    thead th { background:var(--bg-surface); color:var(--text-muted); padding:10px 14px;
+               text-align:left; font-weight:600; border-bottom:1px solid var(--bg-border); }
+    tbody td { padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.05); color:var(--text-primary); }
+    tbody tr:hover { background:rgba(255,255,255,0.02); }
+
+    /* Meet link modal */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7);
+                     z-index:1000; align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:var(--bg-surface); border:1px solid var(--bg-border); border-radius:12px;
+                 padding:28px; width:90%; max-width:480px; }
+    .modal-box h3 { color:var(--accent-yellow); font-family:var(--font-mono); margin-bottom:16px; }
+
+    .module-tab { display:none; }
+    .module-tab.active { display:block; }
+
+    @media (max-width:768px) {
+      body { flex-direction:column; }
+      .sidebar { width:100%; height:auto; flex-direction:row; flex-wrap:wrap; }
+      .side-nav { display:flex; flex-wrap:wrap; gap:4px; padding:8px; }
+      .side-link { padding:6px 10px; font-size:11px; flex:0 0 auto; width:auto; }
+    }
   </style>
 </head>
 <body>
 
   <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="side-brand">// EVALUATOR</div>
+    <div class="side-brand">
+      ⚖️ // EVALUATOR
+      <small id="sideEvName">Loading...</small>
+    </div>
     <nav class="side-nav">
-      <a href="#" class="side-link active" onclick="switchMod('queue', this)"><span>⚖️</span> Judging Queue</a>
-      <a href="#" class="side-link" onclick="switchMod('completed', this)"><span>✅</span> Completed Scores</a>
-      <a href="#" class="side-link" onclick="switchMod('leaderboard', this)"><span>🏆</span> Final Rankings</a>
-      <a href="#" class="side-link" onclick="switchMod('settings', this)"><span>⚙️</span> Account Settings</a>
+      <button class="side-link active" onclick="switchTab('queue',this)">⚖️ Judging Queue</button>
+      <button class="side-link" onclick="switchTab('completed',this)">✅ Completed</button>
+      <button class="side-link" onclick="switchTab('leaderboard',this)">🏆 Leaderboard</button>
     </nav>
     <div class="side-footer">
-      <button class="btn btn-sm w-full" onclick="logout()">// LOGOUT</button>
+      <button class="btn w-full" style="border-color:rgba(255,80,80,0.4); color:#ff5050; font-size:12px;" onclick="logout()">// LOGOUT</button>
     </div>
   </aside>
 
@@ -47,121 +107,307 @@
   <div class="main-canvas">
     <header class="top-bar">
       <div id="welcomeTxt" style="font-family:var(--font-mono); color:var(--text-primary);">// WELCOME, LOADING...</div>
-      <div class="badge" style="background:rgba(255,215,0,0.1); color:var(--accent-yellow); border-color:var(--accent-yellow);">Judging Active</div>
+      <div class="badge" style="background:rgba(255,215,0,0.1); color:var(--accent-yellow); border:1px solid rgba(255,215,0,0.3); padding:4px 12px; border-radius:6px; font-size:12px;">Judging Active</div>
     </header>
 
     <div class="content-pane">
-      
-      <!-- Queue -->
-      <div id="mod-queue" class="module-tab active">
-        <div class="section-head"><h2>Judging Queue</h2><p>Items pending your review and scoring</p></div>
-        
-        <div class="proj-card animate-fadeUp">
-          <div class="score-badge">PENDING</div>
-          <h3 style="color:var(--neon-cyan)">// AI Health Assistant</h3>
-          <p style="color:var(--text-muted); margin:12px 0;">Team: CyberSentinels | Multi-modal agents for medical triage.</p>
-          <div style="font-size:12px; color:var(--text-primary);">Tech: Python, GPT-4, React Native</div>
-          <hr style="border:0; border-top:1px solid var(--bg-border); margin:20px 0;">
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-            <div class="form-group"><label>Innovation (0-50)</label><input type="number" placeholder="0"></div>
-            <div class="form-group"><label>Design (0-50)</label><input type="number" placeholder="0"></div>
-          </div>
-          <button class="btn btn-solid w-full" style="background:var(--accent-yellow); color:#000; margin-top:20px;">Submit Evaluation</button>
-        </div>
 
-        <div class="proj-card animate-fadeUp" style="animation-delay:0.1s;">
-          <div class="score-badge">PENDING</div>
-          <h3 style="color:var(--neon-cyan)">// Blockchain Voting</h3>
-          <p style="color:var(--text-muted); margin:12px 0;">Team: DecentralizeMe | Transparent voting protocol.</p>
-          <div style="font-size:12px; color:var(--text-primary);">Tech: Solidity, Ethers.js, Next.js</div>
-          <hr style="border:0; border-top:1px solid var(--bg-border); margin:20px 0;">
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-            <div class="form-group"><label>Innovation (0-50)</label><input type="number" placeholder="0"></div>
-            <div class="form-group"><label>Design (0-50)</label><input type="number" placeholder="0"></div>
-          </div>
-          <button class="btn btn-solid w-full" style="background:var(--accent-yellow); color:#000; margin-top:20px;">Submit Evaluation</button>
-        </div>
+      <!-- Stats -->
+      <div class="stats-row" id="statsRow">
+        <div class="stat-card"><div class="stat-num" id="sTotalPart">—</div><div class="stat-lbl">Total Participants</div></div>
+        <div class="stat-card"><div class="stat-num" id="sInProgress">—</div><div class="stat-lbl">My In-Progress</div></div>
+        <div class="stat-card"><div class="stat-num" id="sCompleted">—</div><div class="stat-lbl">My Completed</div></div>
       </div>
 
-      <!-- Completed -->
-      <div id="mod-completed" class="module-tab" style="display:none;">
-        <div class="section-head"><h2>Completed Scores</h2><p>Your finished evaluations</p></div>
-        <div class="table-wrap">
+      <!-- Queue Tab -->
+      <div id="tab-queue" class="module-tab active">
+        <div class="section-head"><h2>Judging Queue</h2><p>Choose participants to evaluate and submit scores</p></div>
+        <div id="queueList"><p style="color:var(--text-muted);">Loading...</p></div>
+      </div>
+
+      <!-- Completed Tab -->
+      <div id="tab-completed" class="module-tab">
+        <div class="section-head"><h2>Completed Evaluations</h2><p>Your finished scoring records</p></div>
+        <div class="tbl-wrap">
           <table>
-            <thead><tr><th>Team</th><th>Innovation</th><th>Design</th><th>Total</th></tr></thead>
-            <tbody>
-              <tr><td>GreenWarriors</td><td>45</td><td>42</td><td>87</td></tr>
-              <tr><td>SwiftCoders</td><td>38</td><td>40</td><td>78</td></tr>
-            </tbody>
+            <thead><tr><th>#</th><th>Participant</th><th>College</th><th>Type</th><th>Inn.</th><th>Tech.</th><th>Impact</th><th>Pres.</th><th>Scale</th><th>Total</th></tr></thead>
+            <tbody id="completedTbody"><tr><td colspan="10" style="color:var(--text-muted); text-align:center; padding:30px;">Loading...</td></tr></tbody>
           </table>
         </div>
       </div>
 
-      <!-- Leaderboard -->
-      <div id="mod-leaderboard" class="module-tab" style="display:none;">
-        <div class="section-head"><h2>Final Rankings</h2><p>Official leaderboard after judging</p></div>
-        <div class="table-wrap">
+      <!-- Leaderboard Tab -->
+      <div id="tab-leaderboard" class="module-tab">
+        <div class="section-head"><h2>Final Rankings</h2><p>All completed evaluations ranked by total score</p></div>
+        <div class="tbl-wrap">
           <table>
-            <thead><tr><th>Rank</th><th>Team Name</th><th>Score</th></tr></thead>
-            <tbody>
-              <tr><td>#1</td><td>CyberSentinels</td><td>93.0</td></tr>
-              <tr><td>#2</td><td>ByteBusters</td><td>82.0</td></tr>
-            </tbody>
+            <thead><tr><th>Rank</th><th>Participant</th><th>College</th><th>Type</th><th>Total</th></tr></thead>
+            <tbody id="leaderTbody"><tr><td colspan="5" style="color:var(--text-muted); text-align:center; padding:30px;">Loading...</td></tr></tbody>
           </table>
-        </div>
-      </div>
-
-      <!-- Settings -->
-      <div id="mod-settings" class="module-tab" style="display:none;">
-        <div class="section-head"><h2>Evaluator Settings</h2><p>Manage your judging profile</p></div>
-        <div class="card" style="max-width:600px;">
-          <form onsubmit="event.preventDefault(); showToast('Settings saved!', 'success')">
-             <div class="form-group"><label>Evaluator Name</label><input type="text" id="profName" placeholder="Loading..."></div>
-             <div class="form-group"><label>Institutional Email</label><input type="email" id="profEmail" readonly style="opacity:0.6;"></div>
-             <button class="btn btn-solid" type="submit" style="background:var(--accent-yellow); color:#000; margin-top:10px;">// Save Changes</button>
-          </form>
         </div>
       </div>
 
     </div>
   </div>
 
-  <div id="toast"></div>
+  <!-- Meet Link Modal -->
+  <div class="modal-overlay" id="meetModal">
+    <div class="modal-box">
+      <h3>// SET MEET LINK</h3>
+      <p style="color:var(--text-muted); font-size:13px; margin-bottom:14px;">Share a Google Meet / Zoom link with this participant.</p>
+      <input type="hidden" id="meetUid">
+      <div class="form-group">
+        <label>Google Meet / Zoom URL</label>
+        <input type="url" id="meetLinkInput" placeholder="https://meet.google.com/...">
+      </div>
+      <div style="display:flex; gap:12px; margin-top:16px;">
+        <button class="btn btn-solid" style="background:var(--accent-yellow);color:#000;flex:1;" onclick="submitMeetLink()">Save Link</button>
+        <button class="btn" style="flex:1;" onclick="closeMeetModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
 
+  <div id="toast"></div>
   <script src="js/config.js"></script>
   <script>
     const API = CONFIG.API_URL;
+    let currentEvalId = null;
 
+    // ── Auth check ──
     (async () => {
       try {
-        const token = localStorage.getItem('auth_token');
-        const res = await fetch(API + '/api/auth/me', { 
-          headers: { 'Authorization': 'Bearer ' + token },
-          credentials: 'include' 
-        });
-        const d = await res.json();
-        if (!d.logged_in || d.user.role !== 'EVALUATOR') { window.location.href = 'login.html'; return; }
-        
-        document.getElementById('welcomeTxt').textContent = '// WELCOME, ' + d.user.name.toUpperCase();
-        
-        // Fill settings
-        document.getElementById('profName').value = d.user.name;
-        document.getElementById('profEmail').value = d.user.email;
-      } catch(e) { window.location.href = 'login.html'; }
+        const r = await fetch(API + '/api/evaluator/me', { credentials: 'include' });
+        const d = await r.json();
+        if (!d.logged_in) { window.location.href = 'evaluator-login.html'; return; }
+        document.getElementById('welcomeTxt').textContent = '// WELCOME, ' + d.evaluator.name.toUpperCase();
+        document.getElementById('sideEvName').textContent = d.evaluator.name;
+        loadStats();
+        loadQueue();
+      } catch(e) { window.location.href = 'evaluator-login.html'; }
     })();
 
-    function switchMod(modId, el) {
-      document.querySelectorAll('.module-tab').forEach(m => m.style.display = 'none');
-      document.getElementById('mod-' + modId).style.display = 'block';
-      
+    // ── Tab switching ──
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.module-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
       document.querySelectorAll('.side-link').forEach(l => l.classList.remove('active'));
-      el.classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'completed') loadCompleted();
+      if (tabId === 'leaderboard') loadLeaderboard();
     }
 
+    // ── Stats ──
+    async function loadStats() {
+      try {
+        const r = await fetch(API + '/api/evaluator/stats', { credentials: 'include' });
+        const d = await r.json();
+        document.getElementById('sTotalPart').textContent = d.total_participants;
+        document.getElementById('sInProgress').textContent = d.in_progress;
+        document.getElementById('sCompleted').textContent = d.completed;
+      } catch(e) {}
+    }
+
+    // ── Queue ──
+    async function loadQueue() {
+      const container = document.getElementById('queueList');
+      container.innerHTML = '<p style="color:var(--text-muted);">Loading...</p>';
+      try {
+        const r = await fetch(API + '/api/evaluator/participants', { credentials: 'include' });
+        const d = await r.json();
+        if (!d.participants || !d.participants.length) {
+          container.innerHTML = '<p style="color:var(--text-muted);">No participants registered yet.</p>';
+          return;
+        }
+        container.innerHTML = d.participants.map(p => buildCard(p)).join('');
+      } catch(e) {
+        container.innerHTML = '<p style="color:#f55;">Failed to load participants.</p>';
+      }
+    }
+
+    function buildCard(p) {
+      const status = p.my_status;
+      let badgeClass = 'badge-available', badgeText = 'AVAILABLE';
+      if (status === 'IN_PROGRESS') { badgeClass = 'badge-inprogress'; badgeText = 'IN PROGRESS'; }
+      if (status === 'COMPLETED')   { badgeClass = 'badge-completed';  badgeText = 'COMPLETED'; }
+      if (status === 'TAKEN')       { badgeClass = 'badge-taken';     badgeText = 'TAKEN'; }
+
+      const takenBy = p.other_evaluator ? `<p style="font-size:11px;color:#ff5050;margin-top:8px;">⚠ Taken by: ${p.other_evaluator}</p>` : '';
+      const meetLink = p.evaluation && p.evaluation.meet_link
+        ? `<a href="${p.evaluation.meet_link}" target="_blank" style="font-size:12px;color:var(--neon-cyan);">📹 Meet Link</a>` : '';
+
+      let actions = '';
+      if (status === 'AVAILABLE') {
+        actions = `<button class="btn btn-solid" style="background:var(--accent-yellow);color:#000;font-size:12px;" onclick="chooseParticipant(${p.id})">⚖️ Choose to Evaluate</button>`;
+      } else if (status === 'IN_PROGRESS') {
+        actions = `
+          <button class="btn" style="font-size:12px;color:var(--accent-yellow);border-color:rgba(255,215,0,0.4);" onclick="toggleScoreForm(${p.id})">📝 Open Score Form</button>
+          <button class="btn" style="font-size:12px;" onclick="openMeetModal(${p.id})">📹 Set Meet Link</button>
+          ${meetLink}
+        `;
+      } else if (status === 'COMPLETED') {
+        const ev = p.evaluation;
+        actions = `<span style="font-size:12px;color:#27c93f;">✅ Scored: ${ev ? ev.total_score : '?'}/250</span> ${meetLink}`;
+      }
+
+      const evalBlock = p.evaluation && p.evaluation.meet_link && status === 'IN_PROGRESS'
+        ? `<p style="font-size:11px;color:var(--neon-cyan);margin-top:4px;">Meet: ${p.evaluation.meet_link}</p>` : '';
+
+      return `
+        <div class="proj-card" id="card-${p.id}">
+          <span class="proj-badge ${badgeClass}">${badgeText}</span>
+          <h3 style="color:var(--neon-cyan);font-family:var(--font-mono);font-size:1rem;">${p.name}</h3>
+          <p style="color:var(--text-muted);font-size:12px;margin-top:4px;">
+            ${p.participation_type === 'TEAM' ? '👥 Team: ' + (p.team_name || 'N/A') : '👤 Individual'} &nbsp;|&nbsp;
+            🎓 ${p.college || 'N/A'} &nbsp;|&nbsp; 📧 ${p.email}
+          </p>
+          ${evalBlock}${takenBy}
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">${actions}</div>
+
+          <!-- Score Form (hidden until opened) -->
+          <div class="score-form" id="form-${p.id}">
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">Score each dimension (0–50). Total max = 250.</p>
+            <div class="score-grid">
+              <div class="score-input"><label>💡 Innovation (0-50)</label><input type="number" id="inn-${p.id}" min="0" max="50" placeholder="0"></div>
+              <div class="score-input"><label>⚙️ Technical (0-50)</label><input type="number" id="tech-${p.id}" min="0" max="50" placeholder="0"></div>
+              <div class="score-input"><label>🌍 Impact (0-50)</label><input type="number" id="impact-${p.id}" min="0" max="50" placeholder="0"></div>
+              <div class="score-input"><label>🎤 Presentation (0-50)</label><input type="number" id="pres-${p.id}" min="0" max="50" placeholder="0"></div>
+              <div class="score-input"><label>📈 Scalability (0-50)</label><input type="number" id="scale-${p.id}" min="0" max="50" placeholder="0"></div>
+            </div>
+            <textarea class="comments-field" id="comments-${p.id}" rows="2" placeholder="Comments / feedback (optional)"></textarea>
+            <button class="btn btn-solid w-full" style="background:var(--accent-yellow);color:#000;margin-top:12px;font-size:13px;" onclick="submitScore(${p.id})">✅ Submit Final Score</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleScoreForm(uid) {
+      const f = document.getElementById('form-' + uid);
+      f.style.display = f.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function chooseParticipant(uid) {
+      try {
+        const r = await fetch(API + '/api/evaluator/choose/' + uid, { method:'POST', credentials:'include' });
+        const d = await r.json();
+        if (d.success) { showToast('Participant claimed!', 'success'); loadQueue(); loadStats(); }
+        else showToast(d.error || 'Failed', 'error');
+      } catch(e) { showToast('Error', 'error'); }
+    }
+
+    async function submitScore(uid) {
+      const scores = {
+        innovation_score:   parseInt(document.getElementById('inn-'+uid).value) || 0,
+        technical_score:    parseInt(document.getElementById('tech-'+uid).value) || 0,
+        impact_score:       parseInt(document.getElementById('impact-'+uid).value) || 0,
+        presentation_score: parseInt(document.getElementById('pres-'+uid).value) || 0,
+        scalability_score:  parseInt(document.getElementById('scale-'+uid).value) || 0,
+        comments:           document.getElementById('comments-'+uid).value,
+      };
+      const total = Object.entries(scores).filter(([k]) => k !== 'comments').reduce((a,[,v]) => a+v, 0);
+      if (total === 0) { showToast('Enter at least one score', 'error'); return; }
+      try {
+        const r = await fetch(API + '/api/evaluator/score/' + uid, {
+          method:'POST', credentials:'include',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(scores)
+        });
+        const d = await r.json();
+        if (d.success) { showToast('Scores submitted! Total: ' + d.evaluation.total_score + '/250', 'success'); loadQueue(); loadStats(); }
+        else showToast(d.error || 'Failed', 'error');
+      } catch(e) { showToast('Error', 'error'); }
+    }
+
+    // ── Meet Link ──
+    function openMeetModal(uid) {
+      document.getElementById('meetUid').value = uid;
+      document.getElementById('meetLinkInput').value = '';
+      document.getElementById('meetModal').classList.add('open');
+    }
+    function closeMeetModal() { document.getElementById('meetModal').classList.remove('open'); }
+    async function submitMeetLink() {
+      const uid = document.getElementById('meetUid').value;
+      const link = document.getElementById('meetLinkInput').value.trim();
+      if (!link) { showToast('Enter a valid link', 'error'); return; }
+      try {
+        const r = await fetch(API + '/api/evaluator/meet-link/' + uid, {
+          method:'POST', credentials:'include',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ meet_link: link })
+        });
+        const d = await r.json();
+        if (d.success) { showToast('Meet link saved!', 'success'); closeMeetModal(); loadQueue(); }
+        else showToast(d.error || 'Failed', 'error');
+      } catch(e) { showToast('Error', 'error'); }
+    }
+
+    // ── Completed ──
+    async function loadCompleted() {
+      const tbody = document.getElementById('completedTbody');
+      try {
+        const r = await fetch(API + '/api/evaluator/participants', { credentials: 'include' });
+        const d = await r.json();
+        const done = (d.participants || []).filter(p => p.my_status === 'COMPLETED');
+        if (!done.length) {
+          tbody.innerHTML = '<tr><td colspan="10" style="color:var(--text-muted);text-align:center;padding:30px;">No completed evaluations yet.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = done.map((p, i) => {
+          const ev = p.evaluation;
+          return `<tr>
+            <td>${i+1}</td>
+            <td><strong>${p.name}</strong></td>
+            <td>${p.college || '—'}</td>
+            <td>${p.participation_type}</td>
+            <td>${ev ? ev.innovation_score : '—'}</td>
+            <td>${ev ? ev.technical_score : '—'}</td>
+            <td>${ev ? ev.impact_score : '—'}</td>
+            <td>${ev ? ev.presentation_score : '—'}</td>
+            <td>${ev ? ev.scalability_score : '—'}</td>
+            <td><strong style="color:var(--accent-yellow);">${ev ? ev.total_score : '—'}</strong></td>
+          </tr>`;
+        }).join('');
+      } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="10" style="color:#f55;text-align:center;">Failed to load.</td></tr>';
+      }
+    }
+
+    // ── Leaderboard ──
+    async function loadLeaderboard() {
+      const tbody = document.getElementById('leaderTbody');
+      try {
+        const r = await fetch(API + '/api/evaluator/leaderboard', { credentials: 'include' });
+        const d = await r.json();
+        if (!d.leaderboard || !d.leaderboard.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text-muted);text-align:center;padding:30px;">No completed evaluations yet.</td></tr>';
+          return;
+        }
+        const medals = ['🥇','🥈','🥉'];
+        tbody.innerHTML = d.leaderboard.map((row) => `
+          <tr>
+            <td style="font-weight:bold;">${medals[row.rank-1] || row.rank}</td>
+            <td><strong>${row.name}</strong></td>
+            <td>${row.college || '—'}</td>
+            <td>${row.participation_type}</td>
+            <td><strong style="color:var(--accent-yellow); font-family:var(--font-mono);">${row.total_score}</strong></td>
+          </tr>
+        `).join('');
+      } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color:#f55;text-align:center;">Failed to load.</td></tr>';
+      }
+    }
+
+    // ── Logout ──
     async function logout() {
-      await fetch(API + '/api/auth/logout', { method: 'POST', credentials: 'include' });
-      localStorage.removeItem('auth_token');
-      window.location.href = 'login.html';
+      await fetch(API + '/api/evaluator/logout', { method:'POST', credentials:'include' });
+      window.location.href = 'evaluator-login.html';
+    }
+
+    // ── Toast ──
+    function showToast(msg, type) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + (type === 'error' ? 'toast-error' : 'toast-success');
+      setTimeout(() => t.className = 'toast', 3000);
     }
   </script>
 </body>
