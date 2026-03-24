@@ -244,23 +244,18 @@ def google_callback():
     if not email:
         return "Could not retrieve email from Google", 400
 
-    # Find or create user
+    # Find user
     user = User.query.filter_by(email=email).first()
-    if not user:
-        # Auto-register new social user
-        user = User(
-            name=name,
-            email=email,
-            referral_code=generate_referral_code(),
-            role='PARTICIPANT',
-            is_verified=True # Social logins are pre-verified by Google
-        )
-        db.session.add(user)
-        db.session.commit()
     
+    if not user:
+        # DO NOT auto-register. Redirect to register page with pre-filled info
+        import urllib.parse
+        params = urllib.parse.urlencode({'google_name': name, 'google_email': email})
+        return redirect(f'/register.html?{params}')
+    
+    # Existing user -> Login
     session['user_id'] = user.id
     session['user_email'] = user.email
     session.permanent = True
 
-    # Redirect back to the frontend dashboard or home
     return redirect('/login.html?social_success=1')
