@@ -292,6 +292,12 @@
     }
 
     (async () => {
+      // Check for social success flag from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('social_success')) {
+        showToast('Successfully logged in with Google!', 'success');
+      }
+
       try {
         // 1. Check admin session
         const adminRes = await fetch(API + '/api/admin/check-auth', { credentials: 'include' });
