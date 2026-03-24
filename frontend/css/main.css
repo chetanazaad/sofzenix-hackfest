@@ -393,3 +393,31 @@ tbody tr:hover { background: rgba(255,255,255,0.02); }
   .timer-box { min-width: 70px; padding: 8px 12px; }
   .timer-box span.stat-val { font-size: 1.5rem; }
 }
+/* ── Improved Logo Branding ── */
+.brand-hero {
+  text-align: center;
+  padding: 30px 20px 10px;
+  background: var(--bg-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 70px; /* Space for fixed navbar */
+}
+.brand-hero img {
+  height: clamp(60px, 15vw, 100px);
+  width: auto;
+  filter: drop-shadow(0 0 20px rgba(0, 245, 255, 0.4));
+  transition: transform 0.3s ease;
+}
+.brand-hero img:hover { transform: scale(1.05); }
+
+.nav-logo-simple {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--neon-cyan);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

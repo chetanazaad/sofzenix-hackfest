@@ -228,7 +228,7 @@
 
   <!-- Navbar -->
   <nav class="navbar">
-    <a href="index.html" class="nav-logo"><img src="images/logo.png" alt="SkilStation" style="height: 38px; width: auto; vertical-align: middle; padding: 5px 0;"></a>
+    <a href="index.html" class="nav-logo-simple">⚡ <span>SkilStation</span></a>
     <div class="nav-links">
       <a href="index.html" class="active">Home</a>
       <a href="about.html">About Us</a>
@@ -241,10 +241,15 @@
     <button class="hamburger" onclick="toggleMobileNav()">☰</button>
   </nav>
 
-  <!-- Mobile Nav -->
+  <!-- Large Branding Section -->
+  <div class="brand-hero">
+    <img src="images/logo.png" alt="SkilStation Official Logo">
+  </div>
+
   <div class="overlay" id="overlay" onclick="toggleMobileNav()"></div>
   <div class="mobile-nav" id="mobileNav">
     <button class="mobile-nav-close" onclick="toggleMobileNav()">✕</button>
+    <a href="index.html" class="nav-logo-simple" style="padding: 20px 24px;">⚡ <span>SkilStation</span></a>
     <a href="index.html" style="color:var(--neon-cyan);">Home</a>
     <a href="about.html">About Us</a>
     <a href="prizes.html">Prizes</a>
@@ -254,7 +259,7 @@
     <a href="register.html">Register</a>
   </div>
 
-  <div class="hero">
+  <div class="hero" style="padding-top: 40px;">
     <div class="hero-glow"></div>
     <div class="gsap-hero subtitle" style="font-family:var(--font-mono); color:var(--text-muted); letter-spacing:0.3em; margin-bottom:12px;">// 2026 NATIONAL EDITION</div>
     <h1 class="gsap-hero">MASTER THE <br><span style="background: linear-gradient(90deg, #00f5ff, #b538ff); -webkit-background-clip: text; color: transparent;">FUTURE.</span></h1>

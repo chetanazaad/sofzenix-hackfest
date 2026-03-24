@@ -228,7 +228,7 @@
 
   <!-- Navbar -->
   <nav class="navbar">
-    <a href="index.html" class="nav-logo"><img src="images/logo.png" alt="SkilStation" style="height: 38px; width: auto; vertical-align: middle; padding: 5px 0;"></a>
+    <a href="index.html" class="nav-logo-simple">⚡ <span>SkilStation</span></a>
     <div class="nav-links">
       <a href="index.html">Home</a>
       <a href="about.html">About Us</a>
@@ -241,10 +241,16 @@
     <button class="hamburger" onclick="toggleMobileNav()">&#9776;</button>
   </nav>
 
+  <!-- Large Branding Section -->
+  <div class="brand-hero">
+    <img src="images/logo.png" alt="SkilStation Official Logo">
+  </div>
+
   <!-- Mobile Nav -->
   <div class="overlay" id="overlay" onclick="toggleMobileNav()"></div>
   <div class="mobile-nav" id="mobileNav">
     <button class="mobile-nav-close" onclick="toggleMobileNav()">&#x2715;</button>
+    <a href="index.html" class="nav-logo-simple" style="padding: 20px 24px;">⚡ <span>SkilStation</span></a>
     <a href="index.html">Home</a>
     <a href="about.html">About Us</a>
     <a href="prizes.html" style="color:var(--neon-cyan);">Prizes</a>

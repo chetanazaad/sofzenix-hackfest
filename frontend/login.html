@@ -75,21 +75,27 @@
 </head>
 <body>
   <nav class="navbar scrolled">
-    <a href="index.html" class="nav-logo"><img src="images/logo.png" alt="SkilStation" style="height: 38px; width: auto; vertical-align: middle; padding: 5px 0;"></a>
+    <a href="index.html" class="nav-logo-simple">⚡ <span>SkilStation</span></a>
     <div class="nav-links">
       <a href="index.html">Home</a>
       <a href="register.html" class="btn">Register</a>
     </div>
     <button class="hamburger" onclick="toggleMobileNav()">☰</button>
   </nav>
+
+  <!-- Large Branding Section -->
+  <div class="brand-hero">
+    <img src="images/logo.png" alt="SkilStation Official Logo">
+  </div>
   <div class="overlay" id="overlay" onclick="toggleMobileNav()"></div>
   <div class="mobile-nav" id="mobileNav">
     <button class="mobile-nav-close" onclick="toggleMobileNav()">✕</button>
+    <a href="index.html" class="nav-logo-simple" style="padding: 20px 24px;">⚡ <span>SkilStation</span></a>
     <a href="index.html">Home</a>
     <a href="register.html">Register</a>
   </div>
 
-  <div class="login-page">
+  <div class="login-page" style="padding-top: 20px;">
     <div class="login-container">
 
       <!-- Left -->
